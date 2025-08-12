@@ -1,6 +1,6 @@
 // URL de votre API back-end
 const apiUrl = 'http://localhost:5678/api/works';
-
+let allWorks = []; // Pour stocker toutes les données
 
 
 // Fonction pour afficher les données dans le DOM
