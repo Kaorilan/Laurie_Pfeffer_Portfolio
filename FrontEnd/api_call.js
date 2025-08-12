@@ -5,7 +5,7 @@ const apiUrl = 'http://localhost:5678/api/works';
 
 // Fonction pour afficher les données dans le DOM
 function afficherDonnees(data) {
-  const container = document.getElementById('portfolio');
+  const container = document.getElementById('gallery');
   container.innerHTML = ''; // vider le contenu
 
   data.forEach(item => {
