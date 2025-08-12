@@ -1,33 +1,31 @@
-// URL de votre API back-end
 const apiUrl = 'http://localhost:5678/api/works';
-let allWorks = []; // Pour stocker toutes les données
+let allWorks = []; // Stocker toutes les données reçues
 
-
-// Fonction pour afficher les données dans le DOM
-function afficherDonnees(data) {
+// Affiche les travaux filtrés selon la catégorie
+function afficherDonnees(data, categoryId = 0) {
   const container = document.getElementById('gallery');
-  container.innerHTML = ''; // vider le contenu
+  container.innerHTML = '';
 
-  data.forEach(item => {
+  // 0 ou "0" pour afficher tout, sinon filtre sur categoryId
+  const filteredData = categoryId == 0 ? data : data.filter(item => item.categoryId === Number(categoryId));
+
+  filteredData.forEach(item => {
     const element = document.createElement('div');
 
-    // création img
     const img = document.createElement('img');
     img.src = item.imageUrl;
     img.alt = item.title;
     element.appendChild(img);
 
-    // création titre
     const title = document.createElement('h3');
     title.textContent = item.title;
     element.appendChild(title);
 
-    // ajout à la div container principale
     container.appendChild(element);
   });
 }
 
-
+// Charge les données depuis l'API, affiche tout, puis active le filtre
 function fetchData() {
   fetch(apiUrl)
     .then(response => {
@@ -37,15 +35,25 @@ function fetchData() {
       return response.json();
     })
     .then(data => {
-      afficherDonnees(data);
+      allWorks = data;
+      afficherDonnees(allWorks);
+
+      // Ajouter les écouteurs aux boutons pour filtrer
+      const buttons = document.querySelectorAll('#filters button');
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          afficherDonnees(allWorks, button.id);
+        });
+      });
     })
     .catch(error => {
       console.error('Erreur lors du chargement des données :', error);
       afficherErreur('Impossible de charger les travaux pour le moment.');
     });
+
 }
 
-
+// Affiche un message d’erreur dans la galerie
 function afficherErreur(message) {
   const container = document.getElementById('gallery');
   container.innerHTML = '';
@@ -55,7 +63,7 @@ function afficherErreur(message) {
   container.appendChild(erreurElement);
 }
 
-// Appeler la fonction pour charger les données
+// Initialisation après chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
   fetchData();
 });
