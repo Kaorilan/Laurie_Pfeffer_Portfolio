@@ -206,3 +206,8 @@ footer nav ul {
 	margin: 2em
 }
 
+/**** pages ****/
+#login h2{
+	text-align: center;
+	margin-bottom: 1em;
+}
