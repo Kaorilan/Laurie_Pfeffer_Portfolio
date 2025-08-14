@@ -22,7 +22,6 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
-	background-color: #fffef8;
 	cursor: pointer;
 }
 /* HTML5 display-role reset for older browsers */
@@ -141,7 +140,7 @@ li:hover {
 	border-color: #1D6154;
 	padding: 10px 25px 10px 25px;
 	cursor: pointer;
-	background-color: #fffef8;
+	background-color: white;
 }
 #buttonContainer button:hover{
 	background-color: #1D6154;
@@ -260,8 +259,4 @@ footer nav ul {
   align-items: center;
   gap: 0.5em;
   margin-top: 1em;
-}
-#footer_login ul{
-	height: 60px;
-	background-color: white;
 }
