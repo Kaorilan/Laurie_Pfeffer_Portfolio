@@ -1,5 +1,39 @@
-const apiUrl = 'http://localhost:5678/api/works';
+const apiUrl = 'http://localhost:5678/api';
 let allWorks = []; // Stocker toutes les données reçues
+
+// Données pour chaque bouton
+const boutons = [
+  { id: "0", label: "Tous" },
+  { id: "1", label: "Objets" },
+  { id: "2", label: "Appartements" },
+  { id: "3", label: "Hotels & restaurants" }
+];
+
+// Sélectionner le conteneur
+const container = document.getElementById('buttonContainer');
+
+// Vérifier que le conteneur existe
+if (container) {
+  // Parcourir chaque bouton et le créer
+  boutons.forEach(bouton => {
+    const btn = document.createElement('button');
+    btn.id = bouton.id;                // Assigner l'ID
+    btn.textContent = bouton.label;    // Définir le texte
+    // Optionnel : ajouter une classe pour le style
+    // btn.className = 'mon-style';
+
+    // Ajouter un écouteur d'événement si besoin
+    btn.addEventListener('click', () => {
+      console.log(`Bouton "${bouton.label}" cliqué`);
+      // Ajoutez ici la logique lors du clic
+    });
+
+// Insérer le bouton dans le conteneur
+    container.appendChild(btn);
+  });
+} else {
+  console.error("Le conteneur 'buttonContainer' n'existe pas.");
+}
 
 // Affiche les travaux filtrés selon la catégorie
 function afficherDonnees(data, categoryId = 0) {
@@ -27,7 +61,7 @@ function afficherDonnees(data, categoryId = 0) {
 
 // Charge les données depuis l'API, affiche tout, puis active le filtre
 function fetchData() {
-  fetch(apiUrl)
+  fetch(apiUrl + "/works")
     .then(response => {
       if (!response.ok) {
         throw new Error('Erreur réseau : ' + response.status);
@@ -50,7 +84,7 @@ function fetchData() {
       console.error('Erreur lors du chargement des données :', error);
       afficherErreur('Impossible de charger les travaux pour le moment.');
     });
-
+    
 }
 
 // Affiche un message d’erreur dans la galerie
