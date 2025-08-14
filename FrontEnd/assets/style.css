@@ -208,6 +208,8 @@ footer nav ul {
 }
 
 /**** pages ****/
+
+
 #login {
   display: flex;
   justify-content: center;
@@ -257,4 +259,8 @@ footer nav ul {
   align-items: center;
   gap: 0.5em;
   margin-top: 1em;
+}
+#footer_login ul{
+	height: 60px;
+	background-color: white;
 }
