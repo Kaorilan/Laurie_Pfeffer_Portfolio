@@ -9,6 +9,7 @@ const boutons = [
   { id: "3", label: "Hotels & restaurants" }
 ];
 
+
 // Sélectionner le conteneur
 const container = document.getElementById('buttonContainer');
 
@@ -19,14 +20,12 @@ if (container) {
     const btn = document.createElement('button');
     btn.id = bouton.id;                // Assigner l'ID
     btn.textContent = bouton.label;    // Définir le texte
-    // Optionnel : ajouter une classe pour le style
-    // btn.className = 'mon-style';
+    btn.disabled = true;               // Désactiver ici
 
     // Ajouter un écouteur d'événement si besoin
     btn.addEventListener('click', () => {
-      console.log(`Bouton "${bouton.label}" cliqué`);
-      // Ajoutez ici la logique lors du clic
-    });
+  afficherDonnees(allWorks, bouton.id);
+});
 
 // Insérer le bouton dans le conteneur
     container.appendChild(btn);
@@ -72,19 +71,16 @@ function fetchData() {
       allWorks = data;
       afficherDonnees(allWorks);
 
-      // Ajouter les écouteurs aux boutons pour filtrer
-      const buttons = document.querySelectorAll('#filters button');
-      buttons.forEach(button => {
-        button.addEventListener('click', () => {
-          afficherDonnees(allWorks, button.id);
-        });
-      });
+    // Activer tous les boutons après chargement
+    const buttons = document.querySelectorAll('#buttonContainer button');
+    buttons.forEach(button => {
+      button.disabled = false;
+    });
     })
     .catch(error => {
       console.error('Erreur lors du chargement des données :', error);
       afficherErreur('Impossible de charger les travaux pour le moment.');
     });
-    
 }
 
 // Affiche un message d’erreur dans la galerie
@@ -99,5 +95,20 @@ function afficherErreur(message) {
 
 // Initialisation après chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du clic sur login
+  const login = document.getElementById('login_page');
+  if (login) {
+    login.addEventListener('click', () => {
+      window.location.href = 'login.html';  // Chemin vers la page login
+    });
+
+    // Mettre le lien en gras si on est sur la page login
+    if (window.location.pathname.endsWith('login.html')) {
+      login.classList.add('active-link');
+    }
+  } else {
+    console.error("L'élément #login_page n'existe pas.");
+  }
+ 
   fetchData();
 });

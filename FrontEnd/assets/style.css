@@ -260,3 +260,8 @@ footer nav ul {
   gap: 0.5em;
   margin-top: 1em;
 }
+
+
+.active-link {
+  font-weight: bold;
+}
