@@ -95,6 +95,7 @@ function afficherErreur(message) {
 
 // Initialisation après chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
+
     // Gestion du clic sur login
   const login = document.getElementById('login_page');
   if (login) {
@@ -109,6 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     console.error("L'élément #login_page n'existe pas.");
   }
- 
+
   fetchData();
 });

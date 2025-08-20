@@ -265,3 +265,8 @@ footer nav ul {
 .active-link {
   font-weight: bold;
 }
+
+.error-message{
+	color: red; 
+	margin-top: 10px;
+}
