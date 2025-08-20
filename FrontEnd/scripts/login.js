@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const form = document.getElementById('login-form');
   const errorMessage = document.getElementById('error-message');
-  const submitBtn = document.querySelector('#login-form button[type="submit"]'); // ou getElementById si vous ajoutez un id au bouton
+  const submitBtn = document.getElementById('submit-btn');
 
   if (!form) return console.error("Formulaire introuvable");
   if (!errorMessage) return console.error("#error-message introuvable");
@@ -12,11 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Optionnel : écouteur sur le clic du bouton pour tester ou contourner un blocage
   submitBtn.addEventListener('click', (event) => {
     console.log("Bouton cliqué");
-    // Vous pouvez ici forcer la soumission si nécessaire, sinon ça sert juste pour débugger
-    // form.requestSubmit();
   });
 
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit-btn', function(event) {
     event.preventDefault();
     console.log("Formulaire soumis");
 	
