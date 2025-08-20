@@ -14,22 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Bouton cliqué");
   });
 
-  form.addEventListener('submit-btn', function(event) {
-    event.preventDefault();
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêche le formulaire de recharger la page
     console.log("Formulaire soumis");
 	
-
-    const usernameInput = document.getElementById('email').value;
+    const emailInput = document.getElementById('email').value;
     const passwordInput = document.getElementById('password').value;
 
-    const expectedUsername = "admin";
+    const expectedEmail = "admin";
     const expectedPassword = "12345";
 
-    if (usernameInput === expectedUsername && passwordInput === expectedPassword) {
+    if (emailInput === expectedEmail && passwordInput === expectedPassword) {
       window.location.href = 'index.html';
     } else {
       errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
-      errorMessage.style.color = 'red'; // S’assurer que le texte est visible
+      errorMessage.style.color = 'red';
     }
 
  });
