@@ -1,13 +1,3 @@
-function waitForElement(selector, callback) {
-  const interval = setInterval(() => {
-    const el = document.querySelector(selector);
-    if (el) {
-      clearInterval(interval);
-      callback(el);
-    }
-  }, 50);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Script chargé et DOM prêt");
 
@@ -15,45 +5,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('error-message');
   const submitBtn = document.getElementById('submit-btn');
 
-  if (!form) return console.error("Formulaire introuvable");
-  if (!errorMessage) return console.error("#error-message introuvable");
-  if (!submitBtn) return console.error("Bouton de soumission introuvable");
-
-  // Optionnel : écouteur sur le clic du bouton 
-  submitBtn.addEventListener('click', (event) => {
-    console.log("Bouton cliqué");
-  });
-
-
-  waitForElement('#login-form', (form) => {
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      console.log("Formulaire soumis");
-   
-    });
-  });
-
-  const emailElement = document.getElementById('email');
-  const passwordElement = document.getElementById('password');
-
-  if (!emailElement || !passwordElement) {
-    console.error("Champ email ou mot de passe introuvable");
+  if (!form || !errorMessage || !submitBtn) {
+    console.error("Élément(s) introuvable(s) dans le DOM");
     return;
   }
 
-  const emailInput = emailElement.value;
-  const passwordInput = passwordElement.value;
+  // Vérifie que les champs existent avant d'ajouter l'écouteur
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    console.log("Formulaire soumis");
 
-  console.log("Email:", emailInput);
-  console.log("Password:", passwordInput);
+    const emailElement = document.getElementById('email');
+    const passwordElement = document.getElementById('password');
 
-  const expectedEmail = "admin"; 
-  const expectedPassword = "12345";
+    if (!emailElement || !passwordElement) {
+      console.error("Champ email ou mot de passe introuvable");
+      return;
+    }
 
-  if (emailInput === "admin" && passwordInput === "12345") {
-    window.location.href = 'index.html';
-  } else {
-    errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
-    errorMessage.style.color = 'red';
-  }
+    const emailInput = emailElement.value.trim();
+    const passwordInput = passwordElement.value.trim();
+
+    const expectedEmail = "admin";
+    const expectedPassword = "12345";
+
+    if (emailInput === expectedEmail && passwordInput === expectedPassword) {
+      window.location.href = '../index.html'; // ajuster si nécessaire
+    } else {
+      errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
+      errorMessage.style.color = 'red';
+    }
+  });
 });
