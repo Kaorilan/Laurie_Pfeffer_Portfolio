@@ -14,22 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Bouton cliqué");
   });
 
-  form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Empêche le formulaire de recharger la page
-    console.log("Formulaire soumis");
-	
-    const emailInput = document.getElementById('email').value;
-    const passwordInput = document.getElementById('password').value;
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  console.log("Formulaire soumis");
 
-    const expectedEmail = "admin";
-    const expectedPassword = "12345";
+  const emailElement = document.getElementById('email');
+  const passwordElement = document.getElementById('password');
 
-    if (emailInput === expectedEmail && passwordInput === expectedPassword) {
-      window.location.href = 'index.html';
-    } else {
-      errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
-      errorMessage.style.color = 'red';
-    }
+  if (!emailElement || !passwordElement) {
+    console.error("Champ email ou mot de passe introuvable");
+    return;
+  }
 
- });
+  const emailInput = emailElement.value;
+  const passwordInput = passwordElement.value;
+
+  console.log("Email:", emailInput);
+  console.log("Password:", passwordInput);
+
+  const expectedEmail = "admin"; 
+  const expectedPassword = "12345";
+
+  if (emailInput === "admin" && passwordInput === "12345") {
+    window.location.href = 'index.html';
+  } else {
+    errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
+    errorMessage.style.color = 'red';
+  }
+});
+
 });
