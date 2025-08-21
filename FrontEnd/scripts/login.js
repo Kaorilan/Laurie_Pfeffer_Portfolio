@@ -1,3 +1,13 @@
+function waitForElement(selector, callback) {
+  const interval = setInterval(() => {
+    const el = document.querySelector(selector);
+    if (el) {
+      clearInterval(interval);
+      callback(el);
+    }
+  }, 50);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Script chargé et DOM prêt");
 
@@ -9,14 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!errorMessage) return console.error("#error-message introuvable");
   if (!submitBtn) return console.error("Bouton de soumission introuvable");
 
-  // Optionnel : écouteur sur le clic du bouton pour tester ou contourner un blocage
+  // Optionnel : écouteur sur le clic du bouton 
   submitBtn.addEventListener('click', (event) => {
     console.log("Bouton cliqué");
   });
 
-form.addEventListener('submit', function(event) {
-  event.preventDefault();
-  console.log("Formulaire soumis");
+
+  waitForElement('#login-form', (form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      console.log("Formulaire soumis");
+   
+    });
+  });
 
   const emailElement = document.getElementById('email');
   const passwordElement = document.getElementById('password');
@@ -41,6 +56,4 @@ form.addEventListener('submit', function(event) {
     errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
     errorMessage.style.color = 'red';
   }
-});
-
 });
