@@ -98,6 +98,9 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
+nav a{
+	all: unset;
+}
 #introduction {
 	display: flex;
 	align-items: center;

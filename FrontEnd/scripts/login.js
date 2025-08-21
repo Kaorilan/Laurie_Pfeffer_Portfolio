@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    const email = document.getElementById('email')?.value.trim();
+    const email = document.getElementById('userId')?.value.trim();
     const password = document.getElementById('password')?.value.trim();
 
     if (!email || !password) {
