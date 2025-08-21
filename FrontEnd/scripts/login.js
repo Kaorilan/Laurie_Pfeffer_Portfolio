@@ -1,38 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Script chargé et DOM prêt");
+  console.log("Script login chargé");
 
   const form = document.getElementById('login-form');
   const errorMessage = document.getElementById('error-message');
-  const submitBtn = document.getElementById('submit-btn');
 
-  if (!form || !errorMessage || !submitBtn) {
-    console.error("Élément(s) introuvable(s) dans le DOM");
+  if (!form || !errorMessage) {
+    console.error("Formulaire ou zone d'erreur introuvable.");
     return;
   }
 
-  // Vérifie que les champs existent avant d'ajouter l'écouteur
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', async function(event) {
     event.preventDefault();
-    console.log("Formulaire soumis");
 
-    const emailElement = document.getElementById('email');
-    const passwordElement = document.getElementById('password');
+    const email = document.getElementById('email')?.value.trim();
+    const password = document.getElementById('password')?.value.trim();
 
-    if (!emailElement || !passwordElement) {
-      console.error("Champ email ou mot de passe introuvable");
+    if (!email || !password) {
+      errorMessage.textContent = "Veuillez remplir tous les champs.";
+      errorMessage.style.color = 'red';
       return;
     }
 
-    const emailInput = emailElement.value.trim();
-    const passwordInput = passwordElement.value.trim();
+    try {
+      const response = await fetch('http://localhost:5678/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-    const expectedEmail = "admin";
-    const expectedPassword = "12345";
+      if (!response.ok) {
+        throw new Error("Identifiants incorrects.");
+      }
 
-    if (emailInput === expectedEmail && passwordInput === expectedPassword) {
-      window.location.href = '../index.html'; // ajuster si nécessaire
-    } else {
-      errorMessage.textContent = "Erreur : identifiants incorrects, veuillez réessayer.";
+      const data = await response.json();
+
+      if (data.token) {
+        // Stocker le token dans localStorage
+        localStorage.setItem('authToken', data.token);
+
+        // Rediriger vers l'accueil
+        window.location.href = 'index.html';
+      } else {
+        throw new Error("Réponse invalide du serveur.");
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de la connexion :", error);
+      errorMessage.textContent = error.message;
       errorMessage.style.color = 'red';
     }
   });
