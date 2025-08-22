@@ -1,27 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('authToken');
-  const loginLogoutItem = document.getElementById('login-logout');
+  const loginLogoutItem = document.querySelector('login-logout');
   const editButton = document.getElementById('edit-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
 
   if (token) {
     // Utilisateur connecté
-    loginLogoutItem.innerHTML = '<a href="#" id="logout">Logout</a>';
+    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
     editButton.style.display = 'block';
     editModeBanner.style.display = 'block';
 
     // Déconnexion
-    document.getElementById('logout').addEventListener('click', () => {
+    document.querySelector('logout').addEventListener('click', () => {
       localStorage.removeItem('authToken');
       window.location.href = 'index.html'; // Rediriger après déconnexion
     });
   } else {
     // Utilisateur non connecté
-    loginLogoutItem.innerHTML = '<a href="login.html">Login</a>';
+    loginLogoutItem.innerHTML = '<li><a href="login.html" id="login_page">login </a></li>';
     editButton.style.display = 'none';
     editModeBanner.style.display = 'none';
   }
-});
+
 
   fetchData(); // Charger les travaux publics
 
@@ -43,7 +43,7 @@ function displayLoggedInState() {
   }
 
   // Modifier le texte du menu "login" -> "logout"
-  const loginLogoutItem = document.getElementById('login-logout');
+  const loginLogoutItem = document.querySelector('login-logout');
   if (loginLogoutItem) {
     loginLogoutItem.textContent = 'Logout';
     loginLogoutItem.removeEventListener('click', goToLogin); // Supprimer l'ancien événement
