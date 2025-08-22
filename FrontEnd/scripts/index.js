@@ -1,44 +1,132 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('authToken');
 
-
-function afficherInterfaceAdmin() {
-  const adminBar = document.getElementById('admin-bar');
-  const deleteIcons = document.querySelectorAll('.delete-icon');
-  const editButtons = document.querySelectorAll('.edit-button');
-
-if (adminBar) adminBar.style.display = 'block';
-
-  deleteIcons.forEach(icon => icon.style.display = 'inline');
-  editButtons.forEach(btn => btn.style.display = 'inline');
-}
-
-function cacherFonctionnalitésAdmin() {
-  const adminBar = document.getElementById('admin-bar');
-  const deleteIcons = document.querySelectorAll('.delete-icon');
-  const editButtons = document.querySelectorAll('.edit-button');
-
-if (adminBar) adminBar.style.display = 'none';
-
-  deleteIcons.forEach(icon => icon.style.display = 'none');
-  editButtons.forEach(btn => btn.style.display = 'none');
-}
-
-
-fetch('http://localhost:5678/api/works', {
-  method: 'DELETE',
-  headers: {
-    'Authorization': `Bearer ${token}`
-  }
-});
-
+  // Vérifier si l'utilisateur est connecté ou non
   if (token) {
+    displayLoggedInState();
     console.log("Utilisateur connecté.");
-    afficherInterfaceAdmin(); // Affiche les outils d'administration
   } else {
+    displayLoggedOutState();
     console.log("Utilisateur non connecté.");
-    cacherFonctionnalitésAdmin();
   }
 
-  fetchData(); // Charger les travaux (publics)
+  fetchData(); // Charger les travaux publics
+
+  // Vérifier si l'utilisateur est autorisé à effectuer des actions d'administration
+  if (token) {
+    afficherInterfaceAdmin(); // Afficher les outils d'administration si l'utilisateur est connecté
+  } else {
+    cacherFonctionnalitésAdmin(); // Cacher les outils d'administration si l'utilisateur n'est pas connecté
+  }
+  
+  // Effectuer une requête DELETE pour les travaux (si nécessaire, selon l'authentification)
+  if (token) {
+    fetch('http://localhost:5678/api/works', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(response => {
+      if (!response.ok) {
+        console.error('Erreur lors de la suppression des travaux.');
+      } else {
+        console.log('Travaux supprimés avec succès.');
+      }
+    });
+  }
 });
+
+// Fonction pour afficher l'interface de l'utilisateur connecté
+function displayLoggedInState() {
+  // Afficher le mode édition dans le bandeau
+  const editModeBanner = document.getElementById('edit-mode-banner');
+  if (editModeBanner) {
+    editModeBanner.style.display = 'block';
+  }
+
+  // Modifier le texte du menu "login" -> "logout"
+  const loginLogoutItem = document.getElementById('login-logout');
+  if (loginLogoutItem) {
+    loginLogoutItem.textContent = 'Logout';
+    loginLogoutItem.removeEventListener('click', goToLogin); // Supprimer l'ancien événement
+    loginLogoutItem.addEventListener('click', logout); // Ajouter l'événement logout
+  }
+
+  // Masquer les filtres
+  const filters = document.getElementById('filters');
+  if (filters) {
+    filters.style.display = 'none';
+  }
+
+  // Afficher le bouton de modification
+  const editButton = document.getElementById('edit-button');
+  if (editButton) {
+    editButton.style.display = 'block';
+  }
+}
+
+// Fonction pour afficher l'interface de l'utilisateur déconnecté
+function displayLoggedOutState() {
+  // Cacher le mode édition dans le bandeau
+  const editModeBanner = document.getElementById('edit-mode-banner');
+  if (editModeBanner) {
+    editModeBanner.style.display = 'none';
+  }
+
+  // Modifier le texte du menu "logout" -> "login"
+  const loginLogoutItem = document.getElementById('login-logout');
+  if (loginLogoutItem) {
+    loginLogoutItem.textContent = 'Login';
+    loginLogoutItem.removeEventListener('click', logout); // Supprimer l'événement logout
+    loginLogoutItem.addEventListener('click', goToLogin); // Ajouter l'événement de redirection vers login
+  }
+
+  // Afficher les filtres
+  const filters = document.getElementById('filters');
+  if (filters) {
+    filters.style.display = 'block';
+  }
+
+  // Cacher le bouton de modification
+  const editButton = document.getElementById('edit-button');
+  if (editButton) {
+    editButton.style.display = 'none';
+  }
+}
+
+// Fonction de déconnexion
+function logout() {
+  // Supprimer le token du localStorage
+  localStorage.removeItem('authToken');
+  
+  // Rediriger vers la page d'accueil
+  window.location.href = 'index.html';
+}
+
+// Fonction de redirection vers la page de login
+function goToLogin() {
+  window.location.href = 'login.html';
+}
+
+// Fonction pour afficher les outils d'administration
+function afficherInterfaceAdmin() {
+  // Par exemple, montrer des boutons de gestion des travaux
+  console.log('Affichage des outils d\'administration');
+}
+
+// Fonction pour cacher les outils d'administration
+function cacherFonctionnalitésAdmin() {
+  // Par exemple, masquer les boutons d\'administration
+  console.log('Masquage des outils d\'administration');
+}
+
+// Charger les travaux publics
+function fetchData() {
+  fetch('http://localhost:5678/api/works')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      // Afficher les travaux sur la page
+    })
+    .catch(error => console.error('Erreur de chargement des travaux:', error));
+}
