@@ -1,14 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('authToken');
+  const loginLogoutItem = document.getElementById('login-logout');
+  const editButton = document.getElementById('edit-button');
+  const editModeBanner = document.getElementById('edit-mode-banner');
 
-  // Vérifier si l'utilisateur est connecté ou non
   if (token) {
-    displayLoggedInState();
-    console.log("Utilisateur connecté.");
+    // Utilisateur connecté
+    loginLogoutItem.innerHTML = '<a href="#" id="logout">Logout</a>';
+    editButton.style.display = 'block';
+    editModeBanner.style.display = 'block';
+
+    // Déconnexion
+    document.getElementById('logout').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      window.location.href = 'index.html'; // Rediriger après déconnexion
+    });
   } else {
-    displayLoggedOutState();
-    console.log("Utilisateur non connecté.");
+    // Utilisateur non connecté
+    loginLogoutItem.innerHTML = '<a href="login.html">Login</a>';
+    editButton.style.display = 'none';
+    editModeBanner.style.display = 'none';
   }
+});
 
   fetchData(); // Charger les travaux publics
 
@@ -19,22 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cacherFonctionnalitésAdmin(); // Cacher les outils d'administration si l'utilisateur n'est pas connecté
   }
   
-  // Effectuer une requête DELETE pour les travaux (si nécessaire, selon l'authentification)
-  if (token) {
-    fetch('http://localhost:5678/api/works', {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }).then(response => {
-      if (!response.ok) {
-        console.error('Erreur lors de la suppression des travaux.');
-      } else {
-        console.log('Travaux supprimés avec succès.');
-      }
-    });
-  }
-});
+
 
 // Fonction pour afficher l'interface de l'utilisateur connecté
 function displayLoggedInState() {
@@ -130,3 +128,4 @@ function fetchData() {
     })
     .catch(error => console.error('Erreur de chargement des travaux:', error));
 }
+});
