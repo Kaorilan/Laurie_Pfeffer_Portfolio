@@ -88,7 +88,6 @@ function afficherErreur(message) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Pas besoin de gérer le clic sur le lien login ici
 
   // Active l'état actif du lien login si sur login.html
   const loginLink = document.getElementById('login_page');
