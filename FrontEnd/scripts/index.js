@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('authToken');
-  const loginLogoutItem = document.querySelector('login-logout');
+  const token = sessionStorage.getItem('authToken');
+  const loginLogoutItem = document.getElementById('login_page');
   const editButton = document.getElementById('edit-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
 
@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
     editButton.style.display = 'block';
     editModeBanner.style.display = 'block';
-
+//decode jwt et vérif id det date expi
     // Déconnexion
     document.querySelector('logout').addEventListener('click', () => {
-      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('authToken');
       window.location.href = 'index.html'; // Rediriger après déconnexion
     });
   } else {
@@ -43,7 +43,7 @@ function displayLoggedInState() {
   }
 
   // Modifier le texte du menu "login" -> "logout"
-  const loginLogoutItem = document.querySelector('login-logout');
+  const loginLogoutItem = document.getElementById('login_page');
   if (loginLogoutItem) {
     loginLogoutItem.textContent = 'Logout';
     loginLogoutItem.removeEventListener('click', goToLogin); // Supprimer l'ancien événement
@@ -72,7 +72,7 @@ function displayLoggedOutState() {
   }
 
   // Modifier le texte du menu "logout" -> "login"
-  const loginLogoutItem = document.getElementById('login-logout');
+  const loginLogoutItem = document.getElementById('login_page');
   if (loginLogoutItem) {
     loginLogoutItem.textContent = 'Login';
     loginLogoutItem.removeEventListener('click', logout); // Supprimer l'événement logout
@@ -94,8 +94,8 @@ function displayLoggedOutState() {
 
 // Fonction de déconnexion
 function logout() {
-  // Supprimer le token du localStorage
-  localStorage.removeItem('authToken');
+  // Supprimer le token du sessionStorage
+  sessionStorage.removeItem('authToken');
   
   // Rediriger vers la page d'accueil
   window.location.href = 'index.html';

@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.token) {
         // Stocker le token dans localStorage
-        localStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('authToken', data.token);
 
         // Rediriger vers l'accueil
         window.location.href = 'index.html';
