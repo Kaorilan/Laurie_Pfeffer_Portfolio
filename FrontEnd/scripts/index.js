@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('authToken');
   const isTokenValid = token && isValidToken(token);
+  const filters = document.getElementById('buttonContainer');
 
   const loginLogoutItem = document.getElementById('login_logout_container');
   const editButton = document.getElementById('edit-button');
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (isTokenValid) {
     afficherInterfaceAdmin();
+    buttonContainer.style.display = 'none';
   } else {
     cacherFonctionnalitésAdmin();
   }
