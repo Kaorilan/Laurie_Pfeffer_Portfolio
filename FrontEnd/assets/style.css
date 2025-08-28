@@ -180,7 +180,7 @@ nav a{
 	display: none;
 	position: absolute;
 	left: 0;
-
+	top: 500px;
 	width: 100%;
 
 	overflow: auto;

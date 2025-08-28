@@ -2,8 +2,12 @@ const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("✅ DOM chargé");
+
   const token = sessionStorage.getItem('authToken');
   const isTokenValid = token && isValidToken(token);
+
+  console.log("🔐 Token valide :", isTokenValid);
 
   const filters = document.getElementById('buttonContainer');
   const loginLogoutItem = document.getElementById('login_logout_container');
@@ -37,45 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
     loginLink.classList.add('active-link');
   }
 
-  // Si token invalide, rediriger
-  if (!isTokenValid) {
+    // Si token invalide, rediriger
+   if (!isTokenValid) {
     sessionStorage.removeItem('authToken');
-    window.location.href = 'login.html';
-    return;
-  }
 
+    // Masquer les éléments d'administration
+    if (editButton) editButton.style.display = 'none';
+    if (editModeBanner) editModeBanner.style.display = 'none';
 
-if (isTokenValid) {
-    // Authentifié → afficher interface admin
+    console.log("❌ Token invalide, interface admin masquée");
+  } else {
     showLoggedInUI();
     afficherInterfaceAdmin();
 
-if (filters) filters.style.display = 'none';
+    if (filters) filters.style.display = 'none';
 
-if (editButton) {
-  editButton.addEventListener('click', () => {
-    afficherImagesDansModale(allWorks);
-    modal.style.display = 'block';
-  });
-}
+    if (editButton) {
+      editButton.addEventListener('click', () => {
+        afficherImagesDansModale(allWorks);
+        modal.style.display = 'block';
+      });
+    }
 
-if (closeModalBtn) {
-  closeModalBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
-}
-
-window.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    modal.style.display = 'none';
-  }
-});
-  } else {
-    // Non authentifié → masquer les outils admin si nécessaire
-    if (editButton) editButton.style.display = 'none';
-    if (editModeBanner) editModeBanner.style.display = 'none';
+    console.log("✅ Utilisateur connecté, interface admin affichée");
   }
 
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    } else {
+      // Non authentifié → masquer les outils admin si nécessaire
+      if (!isTokenValid) {
+        if (editButton) editButton.style.display = 'none';
+        if (editModeBanner) editModeBanner.style.display = 'none';
+        console.log("👀 Click hors modal - outils admin masqués (non connecté)");
+      }
+    }
+  });
+
+  console.log("📦 Appel à fetchData()");
   fetchData();
 });
 
@@ -107,7 +117,7 @@ function showLoggedInUI() {
 
 function logout() {
   sessionStorage.removeItem('authToken');
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 function afficherInterfaceAdmin() {
@@ -142,6 +152,9 @@ if (boutonContainer) {
 }
 
 function afficherDonnees(data, categoryId = 0) {
+
+  console.log("🖼️ Données à afficher :", data, "Catégorie :", categoryId);
+
   const container = document.getElementById('gallery');
   if (!container) return;
 
@@ -168,14 +181,21 @@ function afficherDonnees(data, categoryId = 0) {
 }
 
 function fetchData() {
+
+  console.log("Chargement des travaux...");
+
   fetch(apiUrl + "/works")
     .then(response => {
+      console.log("Réponse API :", response.status);
+
       if (!response.ok) {
         throw new Error('Erreur réseau : ' + response.status);
       }
       return response.json();
     })
     .then(data => {
+      console.log("Données reçues depuis l'API :", data);
+
       allWorks = data;
       afficherDonnees(allWorks);
       afficherImagesDansModale(allWorks);
