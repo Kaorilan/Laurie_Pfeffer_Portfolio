@@ -56,7 +56,31 @@
 				<span class="close-btn">&times;</span>
 				<h2>Galerie photo</h2>
 				<div id="modal-gallery" class="modal-gallery"></div>
-				<button>Ajouter des photos</button>
+				<hr class="separator">
+				<button id="open-photo-form-btn">Ajouter une photo</button>
+
+				<form id="photo-upload-form" style="display: none;" enctype="multipart/form-data">
+					<h3 class="form-title">Ajout de photo</h3>
+					<div class="upload-zone">
+						<i class="fa fa-image"></i>
+						<input type="file" id="image-upload" accept="image/jpeg, image/png" required>
+						<button type="button" id="custom-upload-btn">Ajouter une photo</button>
+						<p class="upload-info">jpg, png : 4 Mo max</p>
+					</div>
+					<div class="form-group">
+						<label for="photo-title">Titre</label>
+						<input type="text" id="photo-title" required>
+					</div>
+					<div class="form-group">
+						<label for="photo-category">Catégorie</label>
+						<select id="photo-category" required>
+						<option value="">Choisir une catégorie</option>
+						<!-- Les options seront ajoutées en JS -->
+						</select>
+					</div>
+					<hr class="separator">
+					<button type="submit" class="submit-btn">Ajouter</button>
+				</form>
 			</div>
 		</div>
 		<div id="buttonContainer">

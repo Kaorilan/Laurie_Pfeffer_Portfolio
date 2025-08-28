@@ -11,6 +11,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const editModeBanner = document.getElementById('edit-mode-banner');
   const modal = document.getElementById('edit-modal');
   const closeModalBtn = document.querySelector('.close-btn');
+ 
+  const openFormBtn = document.getElementById('open-photo-form-btn');
+  const formAjout = document.getElementById('photo-upload-form');
+  const modalGallery = document.getElementById('modal-gallery');
+  const modalTitle = document.querySelector('.modal-content h2');
+
+  if (openFormBtn && formAjout && modalGallery && modalTitle) {
+    openFormBtn.addEventListener('click', () => {
+      // Cacher la galerie
+      modalGallery.style.display = 'none';
+      openFormBtn.style.display = 'none';
+      modalTitle.style.display = 'none';
+
+      // Afficher le formulaire
+      formAjout.style.display = 'block';
+    });
+  }
+
+  // Remplir la liste des catégories
+  remplirListeCategories();
 
   const loginLink = document.getElementById('login_page');
   if (loginLink && window.location.pathname.endsWith('login.html')) {
@@ -238,4 +258,24 @@ function supprimerTravail(id) {
       console.error('Erreur API DELETE:', error);
       alert("Erreur lors de la suppression.");
     });
+}
+
+
+// -------------------
+//      Formulaire
+// -------------------
+
+function remplirListeCategories() {
+  const select = document.getElementById('photo-category');
+  if (!select) return;
+
+  // On exclut la catégorie "Tous" (id = "0")
+  const categories = boutons.filter(cat => cat.id !== "0");
+
+  categories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat.id;
+    option.textContent = cat.label;
+    select.appendChild(option);
+  });
 }
