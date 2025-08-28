@@ -24,37 +24,38 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Authentifié
-  showLoggedInUI();
-  afficherInterfaceAdmin();
 
-  // Cacher les filtres pour l’admin
-  if (filters) {
-    filters.style.display = 'none';
-  }
+if (isTokenValid) {
+    // Authentifié → afficher interface admin
+    showLoggedInUI();
+    afficherInterfaceAdmin();
 
-  // Gérer le bouton modifier → ouvrir modale
-  if (editButton) {
-    editButton.addEventListener('click', () => {
-      afficherImagesDansModale(allWorks);
-      modal.style.display = 'block';
-    });
-  }
+if (filters) filters.style.display = 'none';
 
-  // Fermer la modale
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-  }
-
-  window.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-    }
+if (editButton) {
+  editButton.addEventListener('click', () => {
+    afficherImagesDansModale(allWorks);
+    modal.style.display = 'block';
   });
+}
 
-  // Charger les travaux
+if (closeModalBtn) {
+  closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+}
+
+window.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+  } else {
+    // Non authentifié → masquer les outils admin si nécessaire
+    if (editButton) editButton.style.display = 'none';
+    if (editModeBanner) editModeBanner.style.display = 'none';
+  }
+
   fetchData();
 });
 
