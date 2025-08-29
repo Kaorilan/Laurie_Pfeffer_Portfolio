@@ -298,4 +298,116 @@ function remplirListeCategories() {
     option.textContent = cat.label;
     select.appendChild(option);
   });
+
+  const photoUploadForm = document.getElementById('photo-upload-form');
+
+  const imageInput = document.getElementById('image-upload');
+  const uploadZone = document.querySelector('.upload-zone');
+
+if (imageInput && uploadZone) {
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (file) {
+      const fileType = file.type;
+      const fileSize = file.size;
+
+      // Valider le format (JPEG, PNG) et la taille (max 4 Mo)
+      if (!['image/jpeg', 'image/png'].includes(fileType)) {
+        alert("Format non supporté. Choisissez un fichier JPG ou PNG.");
+        imageInput.value = ''; // reset
+        return;
+      }
+
+      if (fileSize > 4 * 1024 * 1024) {
+        alert("Image trop lourde (max 4 Mo).");
+        imageInput.value = '';
+        return;
+      }
+
+      // Supprimer l'aperçu précédent s'il existe
+      const existingPreview = uploadZone.querySelector('img');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+
+      // Afficher l'aperçu
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const preview = document.createElement('img');
+        preview.src = e.target.result;
+        preview.alt = "Aperçu";
+        preview.style.maxWidth = '100%';
+        preview.style.maxHeight = '200px';
+        preview.style.objectFit = 'contain';
+        preview.style.marginTop = '10px';
+
+        uploadZone.appendChild(preview);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+
+  if (photoUploadForm) {
+    photoUploadForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // éviter le rechargement de la page
+
+      const imageInput = document.getElementById('image-upload');
+      const titleInput = document.getElementById('photo-title');
+      const categorySelect = document.getElementById('photo-category');
+
+      const file = imageInput.files[0];
+      const title = titleInput.value.trim();
+      const category = categorySelect.value;
+
+      if (!file || !title || !category) {
+        alert('Veuillez remplir tous les champs.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('title', title);
+      formData.append('category', category);
+
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        alert("Non autorisé.");
+        return;
+      }
+
+      fetch(`${apiUrl}/works`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("✅ Image ajoutée");
+          // Recharger les données
+          fetchData();
+
+          // Réinitialiser le formulaire et réafficher la galerie
+          photoUploadForm.reset();
+          document.getElementById('photo-upload-form').style.display = 'none';
+          document.getElementById('modal-gallery').style.display = 'flex';
+          document.getElementById('open-photo-form-btn').style.display = 'block';
+          document.querySelector('.modal-content h2').style.display = 'block';
+        } else {
+          response.text().then(text => {
+            console.error("Erreur API :", text);
+            alert("Erreur lors de l'envoi de la photo.");
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erreur requête POST :', error);
+        alert("Erreur réseau.");
+      });
+    });
+  }
 }
