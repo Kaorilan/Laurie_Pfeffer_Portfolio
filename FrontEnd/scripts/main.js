@@ -92,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function isValidToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
-    return payload.userId && (!payload.exp || payload.exp > now);
+    const now = Date.now() / 1000;//milli secondes
+    return payload.userId && payload.exp > now;
   } catch (error) {
     console.error("Erreur vérification token :", error);
     return false;
