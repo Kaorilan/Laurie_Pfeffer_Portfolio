@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Remplir la liste des catégories
-  remplirListeCategories();
+  fetchData();
 
   const loginLink = document.getElementById('login_page');
   if (loginLink && window.location.pathname.endsWith('login.html')) {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  console.log("📦 Appel à fetchData()");
+  console.log(" Appel à fetchData()");
   fetchData();
 });
 
@@ -128,32 +128,11 @@ function afficherInterfaceAdmin() {
 //  Galerie & Filtres
 // -------------------
 
-const boutons = [
-  { id: "0", label: "Tous" },
-  { id: "1", label: "Objets" },
-  { id: "2", label: "Appartements" },
-  { id: "3", label: "Hotels & restaurants" }
-];
 
-const boutonContainer = document.getElementById('buttonContainer');
-if (boutonContainer) {
-  boutons.forEach(bouton => {
-    const btn = document.createElement('button');
-    btn.id = bouton.id;
-    btn.textContent = bouton.label;
-    btn.disabled = true;
 
-    btn.addEventListener('click', () => {
-      afficherDonnees(allWorks, bouton.id);
-    });
-
-    boutonContainer.appendChild(btn);
-  });
-}
 
 function afficherDonnees(data, categoryId = 0) {
-
-  console.log("🖼️ Données à afficher :", data, "Catégorie :", categoryId);
+  console.log(" Données à afficher :", data, "Catégorie :", categoryId);
 
   const container = document.getElementById('gallery');
   if (!container) return;
@@ -162,7 +141,7 @@ function afficherDonnees(data, categoryId = 0) {
 
   const filteredData = categoryId == 0
     ? data
-    : data.filter(item => item.categoryId === Number(categoryId));
+    : data.filter(item => item.category.id === Number(categoryId));
 
   filteredData.forEach(item => {
     const element = document.createElement('div');
@@ -182,7 +161,7 @@ function afficherDonnees(data, categoryId = 0) {
 
 function fetchData() {
 
-  console.log("Chargement des travaux...");
+ console.log("Chargement des travaux...");
 
   fetch(apiUrl + "/works")
     .then(response => {
@@ -194,32 +173,54 @@ function fetchData() {
       return response.json();
     })
     .then(data => {
-      console.log("Données reçues depuis l'API :", data);
-
       allWorks = data;
-      afficherDonnees(allWorks);
-      afficherImagesDansModale(allWorks);
 
-      const buttons = document.querySelectorAll('#buttonContainer button');
-      buttons.forEach(button => {
-        button.disabled = false;
+      // Extraire catégories uniques (id + name)
+      const categoriesMap = new Map();
+      allWorks.forEach(work => {
+        const cat = work.category;
+
+    if (cat && !categoriesMap.has(cat.id)) {
+          categoriesMap.set(cat.id, cat.name);
+        }
       });
+
+      // Construire tableau catégories avec "Tous" en premier (id=0)
+      const categories = [{ id: 0, label: "Tous" }];
+      categoriesMap.forEach((name, id) => {
+        categories.push({ id: id, label: name });
+      });
+
+
+      // Remplir la liste du select
+      remplirListeCategories(categories);
+
+      // Vider container boutons puis créer boutons dynamiques
+      const boutonContainer = document.getElementById('buttonContainer');
+      if (boutonContainer) {
+        boutonContainer.innerHTML = ''; // vider
+        categories.forEach(cat => {
+          const btn = document.createElement('button');
+          btn.dataset.id = cat.id;                    // stockage sécurisé de l'id
+          btn.textContent = cat.label;
+
+          btn.addEventListener('click', (e) => {
+            const selectedId = Number(e.target.dataset.id);
+            afficherDonnees(allWorks, selectedId);   // filtrage par catégorie
+          });
+
+
+          boutonContainer.appendChild(btn);
+        });
+      }
+
+      afficherDonnees(allWorks); // afficher toutes les œuvres au départ
+      afficherImagesDansModale(allWorks);
     })
     .catch(error => {
       console.error('Erreur lors du chargement des données :', error);
       afficherErreur('Impossible de charger les travaux pour le moment.');
     });
-}
-
-function afficherErreur(message) {
-  const container = document.getElementById('gallery');
-  if (!container) return;
-
-  container.innerHTML = '';
-  const erreurElement = document.createElement('p');
-  erreurElement.textContent = message;
-  erreurElement.style.color = 'red';
-  container.appendChild(erreurElement);
 }
 
 // -------------------
@@ -285,14 +286,17 @@ function supprimerTravail(id) {
 //      Formulaire
 // -------------------
 
-function remplirListeCategories() {
+function remplirListeCategories(categories) {
   const select = document.getElementById('photo-category');
   if (!select) return;
 
-  // On exclut la catégorie "Tous" (id = "0")
-  const categories = boutons.filter(cat => cat.id !== "0");
+    // On exclut la catégorie "Tous" (id = 0)
+  const filtredCats = categories.filter(cat => cat.id !== 0);
 
-  categories.forEach(cat => {
+  // Vider le select avant ajout (pour éviter doublons)
+  select.innerHTML = '';
+
+  filtredCats.forEach(cat => {
     const option = document.createElement('option');
     option.value = cat.id;
     option.textContent = cat.label;
@@ -300,11 +304,10 @@ function remplirListeCategories() {
   });
 
   const photoUploadForm = document.getElementById('photo-upload-form');
-
   const imageInput = document.getElementById('image-upload');
   const uploadZone = document.querySelector('.upload-zone');
 
-if (imageInput && uploadZone) {
+if (imageInput && uploadZone && !imageInput.hasListenerAttached) {
   imageInput.addEventListener('change', () => {
     const file = imageInput.files[0];
     if (file) {
@@ -330,6 +333,8 @@ if (imageInput && uploadZone) {
         existingPreview.remove();
       }
 
+
+
       // Afficher l'aperçu
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -347,6 +352,9 @@ if (imageInput && uploadZone) {
       reader.readAsDataURL(file);
     }
   });
+
+  // Marquer que le listener est attaché pour éviter plusieurs ajouts
+    imageInput.hasListenerAttached = true;
 }
 
 
@@ -354,6 +362,7 @@ if (imageInput && uploadZone) {
     photoUploadForm.addEventListener('submit', (e) => {
       e.preventDefault(); // éviter le rechargement de la page
 
+      
       const imageInput = document.getElementById('image-upload');
       const titleInput = document.getElementById('photo-title');
       const categorySelect = document.getElementById('photo-category');
@@ -387,7 +396,7 @@ if (imageInput && uploadZone) {
       })
       .then(response => {
         if (response.ok) {
-          console.log("✅ Image ajoutée");
+          console.log(" Image ajoutée");
           // Recharger les données
           fetchData();
 
