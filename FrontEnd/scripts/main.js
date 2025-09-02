@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sélection des éléments du DOM
   // -------------------
   const filters = document.getElementById('buttonContainer');
-  const editButton = document.getElementById('edit-mode-button');
+  const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
   const modal = document.getElementById('edit-modal');
   const closeModalBtn = document.querySelector('.close-btn');
@@ -62,13 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
     afficherInterfaceAdmin();
     if (filters) filters.style.display = 'none';
 
-    if (editButton) {
-      editButton.addEventListener('click', () => {
-        afficherImagesDansModale(allWorks);
-        if (modal) modal.style.display = 'block';
-      });
-    }
-
   }
 
   // -------------------
@@ -107,6 +100,7 @@ function isValidToken(token) {
     const now = Date.now() / 1000; // secondes
     return payload.userId && payload.exp > now;
   } catch (error) {
+    console.error("Erreur vérification token :", error);
     return false;
   }
 }
@@ -117,7 +111,7 @@ function isValidToken(token) {
 // -------------------
 function showLoggedInUI() {
   const loginLogoutItem = document.getElementById('login_logout_container');
-  const editButton = document.getElementById('edit-mode-button');
+  const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
 
   if (loginLogoutItem) {
@@ -145,8 +139,16 @@ function showLoggedInUI() {
   editModeBanner.style.width = '100%';
   }
 
-  if (editButton) {
-  editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier';
+  if (editButtonContainer) {
+  editButtonContainer.innerHTML = `
+    <button id="edit-button">
+      <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier
+    </button>
+  `;
+
+  const editButton = document.getElementById('edit-button');
+
+  // Styles du bouton
   editButton.style.display = 'inline-flex';
   editButton.style.alignItems = 'center';
   editButton.style.justifyContent = 'center';
@@ -156,7 +158,15 @@ function showLoggedInUI() {
   editButton.style.padding = '0px 30px';
   editButton.style.border = 'none';
   editButton.style.cursor = 'pointer';
-  }
+
+  // Listener pour ouvrir la modale
+  editButton.addEventListener('click', () => {
+    const modal = document.getElementById('edit-modal');
+    if (modal) modal.style.display = 'block';
+    afficherImagesDansModale(allWorks);
+  });
+}
+
 
 }
 
@@ -200,7 +210,6 @@ function afficherDonnees(data, categoryId = 0) {
 }
 
 function fetchData() {
-
   fetch(apiUrl + "/works")
     .then(response => {
       if (!response.ok) throw new Error('Erreur réseau : ' + response.status);
@@ -209,25 +218,20 @@ function fetchData() {
     .then(data => {
       allWorks = data;
 
-      // Extraire catégories uniques
+      // Catégories uniques
       const categoriesMap = new Map();
       allWorks.forEach(work => {
         const cat = work.category;
-        if (cat && !categoriesMap.has(cat.id)) {
-          categoriesMap.set(cat.id, cat.name);
-        }
+        if (cat && !categoriesMap.has(cat.id)) categoriesMap.set(cat.id, cat.name);
       });
 
-      // Construire tableau catégories
       const categories = [{ id: 0, label: "Tous" }];
-      categoriesMap.forEach((name, id) => {
-        categories.push({ id: id, label: name });
-      });
+      categoriesMap.forEach((name, id) => categories.push({ id, label: name }));
 
       // Remplir liste select
       remplirListeCategories(categories);
 
-      // Générer boutons filtres
+      // Boutons filtres
       const boutonContainer = document.getElementById('buttonContainer');
       if (boutonContainer) {
         boutonContainer.innerHTML = '';
@@ -236,14 +240,13 @@ function fetchData() {
           btn.dataset.id = cat.id;
           btn.textContent = cat.label;
           btn.addEventListener('click', (e) => {
-            const selectedId = Number(e.target.dataset.id);
-            afficherDonnees(allWorks, selectedId);
+            afficherDonnees(allWorks, Number(e.target.dataset.id));
           });
           boutonContainer.appendChild(btn);
         });
       }
 
-      afficherDonnees(allWorks); 
+      afficherDonnees(allWorks);
       afficherImagesDansModale(allWorks);
     })
     .catch(error => {
