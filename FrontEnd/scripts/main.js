@@ -1,118 +1,163 @@
+// -------------------
+// Variables globales
+// -------------------
 const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("✅ DOM chargé");
 
+// -------------------
+// DOM Ready
+// -------------------
+document.addEventListener('DOMContentLoaded', () => {
+
+  // -------------------
+  // Gestion du token
+  // -------------------
   const token = sessionStorage.getItem('authToken');
   const isTokenValid = token && isValidToken(token);
 
-  console.log("🔐 Token valide :", isTokenValid);
-
+  // -------------------
+  // Sélection des éléments du DOM
+  // -------------------
   const filters = document.getElementById('buttonContainer');
-  const loginLogoutItem = document.getElementById('login_logout_container');
-  const editButton = document.getElementById('edit-button');
+  const editButton = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
   const modal = document.getElementById('edit-modal');
   const closeModalBtn = document.querySelector('.close-btn');
- 
   const openFormBtn = document.getElementById('open-photo-form-btn');
   const formAjout = document.getElementById('photo-upload-form');
   const modalGallery = document.getElementById('modal-gallery');
   const modalTitle = document.querySelector('.modal-content h2');
 
+  // -------------------
+  // Gestion ouverture formulaire ajout photo
+  // -------------------
   if (openFormBtn && formAjout && modalGallery && modalTitle) {
     openFormBtn.addEventListener('click', () => {
-      // Cacher la galerie
       modalGallery.style.display = 'none';
       openFormBtn.style.display = 'none';
       modalTitle.style.display = 'none';
-
-      // Afficher le formulaire
       formAjout.style.display = 'block';
     });
   }
 
-  // Remplir la liste des catégories
-  fetchData();
-
+  // -------------------
+  // Gestion lien login actif
+  // -------------------
   const loginLink = document.getElementById('login_page');
   if (loginLink && window.location.pathname.endsWith('login.html')) {
     loginLink.classList.add('active-link');
   }
 
-    // Si token invalide, rediriger
-   if (!isTokenValid) {
+  // -------------------
+  // Gestion UI selon connexion
+  // -------------------
+  if (!isTokenValid) {
     sessionStorage.removeItem('authToken');
-
-    // Masquer les éléments d'administration
     if (editButton) editButton.style.display = 'none';
     if (editModeBanner) editModeBanner.style.display = 'none';
-
-    console.log("❌ Token invalide, interface admin masquée");
   } else {
+
     showLoggedInUI();
     afficherInterfaceAdmin();
-
     if (filters) filters.style.display = 'none';
 
     if (editButton) {
       editButton.addEventListener('click', () => {
         afficherImagesDansModale(allWorks);
-        modal.style.display = 'block';
+        if (modal) modal.style.display = 'block';
       });
     }
 
-    console.log("✅ Utilisateur connecté, interface admin affichée");
   }
 
-  if (closeModalBtn) {
+  // -------------------
+  // Fermeture modale
+  // -------------------
+  if (closeModalBtn && modal) {
     closeModalBtn.addEventListener('click', () => {
       modal.style.display = 'none';
     });
   }
 
-  window.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-    } else {
-      // Non authentifié → masquer les outils admin si nécessaire
-      if (!isTokenValid) {
+  if (modal) {
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      } else if (!isTokenValid) {
         if (editButton) editButton.style.display = 'none';
         if (editModeBanner) editModeBanner.style.display = 'none';
-        console.log("👀 Click hors modal - outils admin masqués (non connecté)");
       }
-    }
-  });
+    });
+  }
 
-  console.log(" Appel à fetchData()");
+  // -------------------
+  // Premier chargement des données
+  // -------------------
   fetchData();
 });
 
+
+// -------------------
+// Vérification token
+// -------------------
 function isValidToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;//milli secondes
+    const now = Date.now() / 1000; // secondes
     return payload.userId && payload.exp > now;
   } catch (error) {
-    console.error("Erreur vérification token :", error);
     return false;
   }
 }
 
+
+// -------------------
+// UI Connexion / Déconnexion
+// -------------------
 function showLoggedInUI() {
   const loginLogoutItem = document.getElementById('login_logout_container');
-  const editButton = document.getElementById('edit-button');
+  const editButton = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
 
-  loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
-  editButton.style.display = 'block';
-  editModeBanner.style.display = 'block';
+  if (loginLogoutItem) {
+    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
+    const logoutLink = document.querySelector('#logout');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    }
+  }
 
-  document.querySelector('#logout').addEventListener('click', (e) => {
-    e.preventDefault();
-    logout();
-  });
+  if (editModeBanner) {
+  editModeBanner.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
+  editModeBanner.style.display = 'flex';
+  editModeBanner.style.alignItems = 'center';
+  editModeBanner.style.justifyContent = 'center';
+  editModeBanner.style.gap = '8px';
+  editModeBanner.style.backgroundColor = 'black';
+  editModeBanner.style.color = 'white';
+  editModeBanner.style.padding = '12px';
+  editModeBanner.style.fontSize = '18px';
+  editModeBanner.style.fontWeight = 'bold';
+  editModeBanner.style.width = '100%';
+  }
+
+  if (editButton) {
+  editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier';
+  editButton.style.display = 'inline-flex';
+  editButton.style.alignItems = 'center';
+  editButton.style.justifyContent = 'center';
+  editButton.style.gap = '6px';
+  editButton.style.backgroundColor = 'transparent';
+  editButton.style.color = 'black';
+  editButton.style.padding = '0px 30px';
+  editButton.style.border = 'none';
+  editButton.style.cursor = 'pointer';
+  }
+
 }
 
 function logout() {
@@ -121,18 +166,13 @@ function logout() {
 }
 
 function afficherInterfaceAdmin() {
-  console.log("Affichage des outils d'administration");
 }
 
+
 // -------------------
-//  Galerie & Filtres
+// Galerie & filtres
 // -------------------
-
-
-
-
 function afficherDonnees(data, categoryId = 0) {
-  console.log(" Données à afficher :", data, "Catégorie :", categoryId);
 
   const container = document.getElementById('gallery');
   if (!container) return;
@@ -161,72 +201,60 @@ function afficherDonnees(data, categoryId = 0) {
 
 function fetchData() {
 
- console.log("Chargement des travaux...");
-
   fetch(apiUrl + "/works")
     .then(response => {
-      console.log("Réponse API :", response.status);
-
-      if (!response.ok) {
-        throw new Error('Erreur réseau : ' + response.status);
-      }
+      if (!response.ok) throw new Error('Erreur réseau : ' + response.status);
       return response.json();
     })
     .then(data => {
       allWorks = data;
 
-      // Extraire catégories uniques (id + name)
+      // Extraire catégories uniques
       const categoriesMap = new Map();
       allWorks.forEach(work => {
         const cat = work.category;
-
-    if (cat && !categoriesMap.has(cat.id)) {
+        if (cat && !categoriesMap.has(cat.id)) {
           categoriesMap.set(cat.id, cat.name);
         }
       });
 
-      // Construire tableau catégories avec "Tous" en premier (id=0)
+      // Construire tableau catégories
       const categories = [{ id: 0, label: "Tous" }];
       categoriesMap.forEach((name, id) => {
         categories.push({ id: id, label: name });
       });
 
-
-      // Remplir la liste du select
+      // Remplir liste select
       remplirListeCategories(categories);
 
-      // Vider container boutons puis créer boutons dynamiques
+      // Générer boutons filtres
       const boutonContainer = document.getElementById('buttonContainer');
       if (boutonContainer) {
-        boutonContainer.innerHTML = ''; // vider
+        boutonContainer.innerHTML = '';
         categories.forEach(cat => {
           const btn = document.createElement('button');
-          btn.dataset.id = cat.id;                    // stockage sécurisé de l'id
+          btn.dataset.id = cat.id;
           btn.textContent = cat.label;
-
           btn.addEventListener('click', (e) => {
             const selectedId = Number(e.target.dataset.id);
-            afficherDonnees(allWorks, selectedId);   // filtrage par catégorie
+            afficherDonnees(allWorks, selectedId);
           });
-
-
           boutonContainer.appendChild(btn);
         });
       }
 
-      afficherDonnees(allWorks); // afficher toutes les œuvres au départ
+      afficherDonnees(allWorks); 
       afficherImagesDansModale(allWorks);
     })
     .catch(error => {
-      console.error('Erreur lors du chargement des données :', error);
       afficherErreur('Impossible de charger les travaux pour le moment.');
     });
 }
 
-// -------------------
-//      Modale
-// -------------------
 
+// -------------------
+// Modale
+// -------------------
 function afficherImagesDansModale(data) {
   const modalGallery = document.getElementById('modal-gallery');
   if (!modalGallery) return;
@@ -244,10 +272,7 @@ function afficherImagesDansModale(data) {
     const deleteIcon = document.createElement('span');
     deleteIcon.classList.add('delete-icon');
     deleteIcon.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
-
-    deleteIcon.addEventListener('click', () => {
-      supprimerTravail(item.id);
-    });
+    deleteIcon.addEventListener('click', () => supprimerTravail(item.id));
 
     container.appendChild(img);
     container.appendChild(deleteIcon);
@@ -264,36 +289,32 @@ function supprimerTravail(id) {
 
   fetch(`${apiUrl}/works/${id}`, {
     method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers: { 'Authorization': `Bearer ${token}` }
   })
     .then(response => {
       if (response.ok) {
-        fetchData(); // mise à jour galerie + modale
+        fetchData();
       } else {
         alert("Erreur lors de la suppression.");
       }
     })
     .catch(error => {
-      console.error('Erreur API DELETE:', error);
       alert("Erreur lors de la suppression.");
     });
 }
 
 
 // -------------------
-//      Formulaire
+// Formulaire
 // -------------------
-
 function remplirListeCategories(categories) {
   const select = document.getElementById('photo-category');
   if (!select) return;
 
-    // On exclut la catégorie "Tous" (id = 0)
+  // Exclure "Tous"
   const filtredCats = categories.filter(cat => cat.id !== 0);
 
-  // Vider le select avant ajout (pour éviter doublons)
+  // Vider select
   select.innerHTML = '';
 
   filtredCats.forEach(cat => {
@@ -307,62 +328,52 @@ function remplirListeCategories(categories) {
   const imageInput = document.getElementById('image-upload');
   const uploadZone = document.querySelector('.upload-zone');
 
-if (imageInput && uploadZone && !imageInput.hasListenerAttached) {
-  imageInput.addEventListener('change', () => {
-    const file = imageInput.files[0];
-    if (file) {
-      const fileType = file.type;
-      const fileSize = file.size;
+  if (imageInput && uploadZone && !imageInput.dataset.listenerAttached) {
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+      if (file) {
+        const fileType = file.type;
+        const fileSize = file.size;
 
-      // Valider le format (JPEG, PNG) et la taille (max 4 Mo)
-      if (!['image/jpeg', 'image/png'].includes(fileType)) {
-        alert("Format non supporté. Choisissez un fichier JPG ou PNG.");
-        imageInput.value = ''; // reset
-        return;
+        if (!['image/jpeg', 'image/png'].includes(fileType)) {
+          alert("Format non supporté. Choisissez un fichier JPG ou PNG.");
+          imageInput.value = '';
+          return;
+        }
+
+        if (fileSize > 4 * 1024 * 1024) {
+          alert("Image trop lourde (max 4 Mo).");
+          imageInput.value = '';
+          return;
+        }
+
+        // Supprimer ancien aperçu
+        const existingPreview = uploadZone.querySelector('img');
+        if (existingPreview) existingPreview.remove();
+
+        // Aperçu
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = document.createElement('img');
+          preview.src = e.target.result;
+          preview.alt = "Aperçu";
+          preview.style.maxWidth = '100%';
+          preview.style.maxHeight = '200px';
+          preview.style.objectFit = 'contain';
+          preview.style.marginTop = '10px';
+          uploadZone.appendChild(preview);
+        };
+        reader.readAsDataURL(file);
       }
+    });
 
-      if (fileSize > 4 * 1024 * 1024) {
-        alert("Image trop lourde (max 4 Mo).");
-        imageInput.value = '';
-        return;
-      }
-
-      // Supprimer l'aperçu précédent s'il existe
-      const existingPreview = uploadZone.querySelector('img');
-      if (existingPreview) {
-        existingPreview.remove();
-      }
-
-
-
-      // Afficher l'aperçu
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const preview = document.createElement('img');
-        preview.src = e.target.result;
-        preview.alt = "Aperçu";
-        preview.style.maxWidth = '100%';
-        preview.style.maxHeight = '200px';
-        preview.style.objectFit = 'contain';
-        preview.style.marginTop = '10px';
-
-        uploadZone.appendChild(preview);
-      };
-
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // Marquer que le listener est attaché pour éviter plusieurs ajouts
-    imageInput.hasListenerAttached = true;
-}
-
+    imageInput.dataset.listenerAttached = "true";
+  }
 
   if (photoUploadForm) {
     photoUploadForm.addEventListener('submit', (e) => {
-      e.preventDefault(); // éviter le rechargement de la page
+      e.preventDefault();
 
-      
       const imageInput = document.getElementById('image-upload');
       const titleInput = document.getElementById('photo-title');
       const categorySelect = document.getElementById('photo-category');
@@ -389,34 +400,36 @@ if (imageInput && uploadZone && !imageInput.hasListenerAttached) {
 
       fetch(`${apiUrl}/works`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       })
-      .then(response => {
-        if (response.ok) {
-          console.log(" Image ajoutée");
-          // Recharger les données
-          fetchData();
+        .then(response => {
+          if (response.ok) {
+            fetchData();
 
-          // Réinitialiser le formulaire et réafficher la galerie
-          photoUploadForm.reset();
-          document.getElementById('photo-upload-form').style.display = 'none';
-          document.getElementById('modal-gallery').style.display = 'flex';
-          document.getElementById('open-photo-form-btn').style.display = 'block';
-          document.querySelector('.modal-content h2').style.display = 'block';
-        } else {
-          response.text().then(text => {
-            console.error("Erreur API :", text);
-            alert("Erreur lors de l'envoi de la photo.");
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Erreur requête POST :', error);
-        alert("Erreur réseau.");
-      });
+            // Réinitialiser
+            photoUploadForm.reset();
+            photoUploadForm.style.display = 'none';
+            document.getElementById('modal-gallery').style.display = 'flex';
+            document.getElementById('open-photo-form-btn').style.display = 'block';
+            document.querySelector('.modal-content h2').style.display = 'block';
+          } else {
+            response.text().then(text => {
+              alert("Erreur lors de l'envoi de la photo.");
+            });
+          }
+        })
+        .catch(error => {
+          alert("Erreur réseau.");
+        });
     });
   }
+}
+
+
+// -------------------
+// Fonction utilitaire erreur
+// -------------------
+function afficherErreur(message) {
+  alert(message); // (ou un affichage plus élégant dans ton UI)
 }

@@ -16,7 +16,6 @@
 <body>
 <header>
 	<div id="edit-mode-banner">
-    	<i class="fa fa-pencil-square-o" aria-hidden="true">Mode édition</i>
   	</div>
 	<div id="menu_nav">
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
@@ -44,47 +43,12 @@
 	</section>
 
 	<section id="portfolio">
-		<div id="edit-mode-button">
+		<div class="portfolio-header">
 			<h2>Mes Projets</h2>
-			<div>
-			<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-			<button id="edit-button">Modifier</button>
-			</div>
+			<div id="edit-mode-button"></div>
 		</div>
+		
 		<div id="edit-modal" class="modal">
-			<div class="modal-content">
-				<span class="close-btn">&times;</span>
-				<h2>Galerie photo</h2>
-				<div id="modal-gallery" class="modal-gallery"></div>
-				<hr class="separator">
-				<button id="open-photo-form-btn">Ajouter une photo</button>
-
-				<form id="photo-upload-form" style="display: none;" enctype="multipart/form-data">
-				<h2 class="form-title">Ajout de photo</h2>
-				<div class="upload-zone">
-					<label for="image-upload" class="custom-upload-label">
-					<i class="fa fa-image"></i>
-					<span>+ Ajouter une photo</span>
-					</label>
-					<input type="file" id="image-upload" accept="image/jpeg, image/png" required>
-					<p class="upload-info">jpeg, png : 4 Mo max</p>
-				</div>
-				<div class="form-group">
-					<label for="photo-title">Titre</label>
-					<input type="text" id="photo-title" required>
-				</div>
-				<div class="form-group">
-					<label for="photo-category">Catégorie</label>
-					<select id="photo-category" required>
-					<option value="">Choisir une catégorie</option>
-					</select>
-				</div>
-				<hr class="separator">
-				<button type="submit" class="submit-btn">Ajouter</button>
-				</form>
-			</div>
-			</div>
-
 		</div>
 		<div id="buttonContainer">
 			<!--<button id="0">Tous</button>
