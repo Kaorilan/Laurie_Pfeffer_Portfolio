@@ -22,24 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const filters = document.getElementById('buttonContainer');
   const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
-  const modal = document.getElementById('edit-modal');
-  const closeModalBtn = document.querySelector('.close-btn');
-  const openFormBtn = document.getElementById('open-photo-form-btn');
-  const formAjout = document.getElementById('photo-upload-form');
-  const modalGallery = document.getElementById('modal-gallery');
-  const modalTitle = document.querySelector('.modal-content h2');
-
-  // -------------------
-  // Gestion ouverture formulaire ajout photo
-  // -------------------
-  if (openFormBtn && formAjout && modalGallery && modalTitle) {
-    openFormBtn.addEventListener('click', () => {
-      modalGallery.style.display = 'none';
-      openFormBtn.style.display = 'none';
-      modalTitle.style.display = 'none';
-      formAjout.style.display = 'block';
-    });
-  }
+  
+  
 
   // -------------------
   // Gestion lien login actif
@@ -49,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginLink.classList.add('active-link');
   }
 
-  // -------------------
+// -------------------
 // Gestion UI selon connexion
 // -------------------
 if (!isTokenValid) {
@@ -68,23 +52,6 @@ if (!isTokenValid) {
   if (filters) filters.style.display = 'none';
 }
 
-
-  // -------------------
-  // Fermeture modale
-  // -------------------
-  if (closeModalBtn && modal) {
-    closeModalBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-  }
-
-  if (modal) {
-    window.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-  }
 
   // -------------------
   // Premier chargement des données
@@ -107,15 +74,19 @@ function isValidToken(token) {
   }
 }
 
-
 // -------------------
 // UI Connexion / Déconnexion
 // -------------------
+
 function showLoggedInUI() {
   const loginLogoutItem = document.getElementById('login_logout_container');
   const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
+  const modal = document.getElementById('edit-modal');
 
+  // -------------------
+  // Lien Logout
+  // -------------------
   if (loginLogoutItem) {
     loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
     const logoutLink = document.querySelector('#logout');
@@ -127,72 +98,105 @@ function showLoggedInUI() {
     }
   }
 
+  // -------------------
+  // Bandeau "Mode édition"
+  // -------------------
   if (editModeBanner) {
-  editModeBanner.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
-  editModeBanner.style.display = 'flex';
-  editModeBanner.style.alignItems = 'center';
-  editModeBanner.style.justifyContent = 'center';
-  editModeBanner.style.gap = '8px';
-  editModeBanner.style.backgroundColor = 'black';
-  editModeBanner.style.color = 'white';
-  editModeBanner.style.padding = '12px';
-  editModeBanner.style.fontSize = '18px';
-  editModeBanner.style.fontWeight = 'bold';
-  editModeBanner.style.width = '100%';
+    editModeBanner.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
+    editModeBanner.style.display = 'flex';
+    editModeBanner.style.alignItems = 'center';
+    editModeBanner.style.justifyContent = 'center';
+    editModeBanner.style.gap = '8px';
+    editModeBanner.style.backgroundColor = 'black';
+    editModeBanner.style.color = 'white';
+    editModeBanner.style.padding = '12px';
+    editModeBanner.style.fontSize = '18px';
+    editModeBanner.style.fontWeight = 'bold';
+    editModeBanner.style.width = '100%';
   }
 
+  // -------------------
+  // Bouton "Modifier" 
+  // -------------------
   if (editButtonContainer) {
-  editButtonContainer.innerHTML = `
-    <button id="edit-button">
-      <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier
-    </button>
-  `;
+    editButtonContainer.innerHTML = `
+      <button id="edit-button">
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier
+      </button>
+    `;
 
-  const editButton = document.getElementById('edit-button');
+    const editButton = document.getElementById('edit-button');
 
-  // Styles du bouton
-  editButton.style.display = 'inline-flex';
-  editButton.style.alignItems = 'center';
-  editButton.style.justifyContent = 'center';
-  editButton.style.gap = '6px';
-  editButton.style.backgroundColor = 'transparent';
-  editButton.style.color = 'black';
-  editButton.style.padding = '0px 30px';
-  editButton.style.border = 'none';
-  editButton.style.cursor = 'pointer';
-
-  // Créer la structure de la modale si elle n'existe pas déjà
-let modal = document.getElementById('edit-modal');
-if (modal && modal.innerHTML.trim() === "") {
-  modal.innerHTML = `
-    <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <h2>Galerie photo</h2>
-      <div id="modal-gallery"></div>
-      <button id="open-photo-form-btn">Ajouter une photo</button>
-      <form id="photo-upload-form" style="display: none;">
-        <div class="upload-zone">
-          <input type="file" id="image-upload" accept="image/png, image/jpeg" />
-        </div>
-        <input type="text" id="photo-title" placeholder="Titre" />
-        <select id="photo-category"></select>
-        <button type="submit">Valider</button>
-      </form>
-    </div>
-  `;
-}
+    // Styles du bouton
+    editButton.style.display = 'inline-flex';
+    editButton.style.alignItems = 'center';
+    editButton.style.justifyContent = 'center';
+    editButton.style.gap = '6px';
+    editButton.style.backgroundColor = 'transparent';
+    editButton.style.color = 'black';
+    editButton.style.padding = '0px 30px';
+    editButton.style.border = 'none';
+    editButton.style.cursor = 'pointer';
 
 
-  // Listener pour ouvrir la modale
+
+  if (modal && modal.innerHTML.trim() === "") {
+    modal.innerHTML = `
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Galerie photo</h2>
+        <div id="modal-gallery"></div>
+        <button id="open-photo-form-btn">Ajouter une photo</button>
+        <form id="photo-upload-form" style="display:none;">
+          <div class="upload-zone">
+            <input type="file" id="image-upload" accept="image/png, image/jpeg"/>
+          </div>
+          <input type="text" id="photo-title" placeholder="Titre"/>
+          <select id="photo-category"></select>
+          <button type="submit">Valider</button>
+        </form>
+      </div>
+    `;
+  }
+
+  // -------------------
+  // Listener ouverture modale
+  // -------------------
   editButton.addEventListener('click', () => {
-    const modal = document.getElementById('edit-modal');
-    if (modal) modal.style.display = 'block';
+    modal.style.display = 'block';
     afficherImagesDansModale(allWorks);
-  });
+
+  // Listener fermeture
+  const closeModalBtn = modal.querySelector('.close-btn');
+  if (closeModalBtn) closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+
+    window.addEventListener('click', e => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    const openFormBtn = document.getElementById('open-photo-form-btn');
+    const formAjout = document.getElementById('photo-upload-form');
+    const modalGallery = document.getElementById('modal-gallery');
+    const modalTitle = document.querySelector('.modal-content h2');
+
+    if (openFormBtn && formAjout && modalGallery && modalTitle) {
+      openFormBtn.addEventListener('click', () => {
+        modalGallery.style.display = 'none';
+        openFormBtn.style.display = 'none';
+        modalTitle.style.display = 'none';
+        formAjout.style.display = 'block';
+        });
+      }
+    });
+  }
 }
 
-
-}
 
 function logout() {
   sessionStorage.removeItem('authToken');
