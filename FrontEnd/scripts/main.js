@@ -50,19 +50,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------
-  // Gestion UI selon connexion
-  // -------------------
-  if (!isTokenValid) {
-    sessionStorage.removeItem('authToken');
-    if (editButton) editButton.style.display = 'none';
-    if (editModeBanner) editModeBanner.style.display = 'none';
-  } else {
+// Gestion UI selon connexion
+// -------------------
+if (!isTokenValid) {
+  sessionStorage.removeItem('authToken');
+  if (editButtonContainer) editButtonContainer.style.display = 'none';
+  if (editModeBanner) editModeBanner.style.display = 'none';
 
-    showLoggedInUI();
-    afficherInterfaceAdmin();
-    if (filters) filters.style.display = 'none';
+  // IMPORTANT : quand on n’est PAS connecté, on montre les filtres
+  if (filters) filters.style.display = 'flex';
 
-  }
+} else {
+  showLoggedInUI();
+  afficherInterfaceAdmin();
+
+  // Quand on est connecté → on masque les filtres
+  if (filters) filters.style.display = 'none';
+}
+
 
   // -------------------
   // Fermeture modale
@@ -77,9 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.style.display = 'none';
-      } else if (!isTokenValid) {
-        if (editButton) editButton.style.display = 'none';
-        if (editModeBanner) editModeBanner.style.display = 'none';
       }
     });
   }
@@ -158,6 +160,28 @@ function showLoggedInUI() {
   editButton.style.padding = '0px 30px';
   editButton.style.border = 'none';
   editButton.style.cursor = 'pointer';
+
+  // Créer la structure de la modale si elle n'existe pas déjà
+let modal = document.getElementById('edit-modal');
+if (modal && modal.innerHTML.trim() === "") {
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Galerie photo</h2>
+      <div id="modal-gallery"></div>
+      <button id="open-photo-form-btn">Ajouter une photo</button>
+      <form id="photo-upload-form" style="display: none;">
+        <div class="upload-zone">
+          <input type="file" id="image-upload" accept="image/png, image/jpeg" />
+        </div>
+        <input type="text" id="photo-title" placeholder="Titre" />
+        <select id="photo-category"></select>
+        <button type="submit">Valider</button>
+      </form>
+    </div>
+  `;
+}
+
 
   // Listener pour ouvrir la modale
   editButton.addEventListener('click', () => {
