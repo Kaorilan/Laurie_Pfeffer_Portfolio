@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const filters = document.getElementById('buttonContainer');
   const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
-  
+  const modal = document.getElementById('edit-modal');
   
 
   // -------------------
@@ -33,24 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loginLink.classList.add('active-link');
   }
 
-// -------------------
-// Gestion UI selon connexion
-// -------------------
-if (!isTokenValid) {
-  sessionStorage.removeItem('authToken');
-  if (editButtonContainer) editButtonContainer.style.display = 'none';
-  if (editModeBanner) editModeBanner.style.display = 'none';
-
-  // IMPORTANT : quand on n’est PAS connecté, on montre les filtres
-  if (filters) filters.style.display = 'flex';
-
-} else {
-  showLoggedInUI();
-  afficherInterfaceAdmin();
-
-  // Quand on est connecté → on masque les filtres
-  if (filters) filters.style.display = 'none';
-}
+  // -------------------
+  // Gestion UI selon connexion
+  // -------------------
+  if (!isTokenValid) {
+    sessionStorage.removeItem('authToken');
+    if (editButtonContainer) editButtonContainer.style.display = 'none';
+    if (editModeBanner) editModeBanner.style.display = 'none';
+    // IMPORTANT : quand on n’est PAS connecté, on montre les filtres
+    if (filters) filters.style.display = 'flex';
+  } else {
+    showLoggedInUI();
+    // Quand on est connecté → on masque les filtres
+    if (filters) filters.style.display = 'none';
+  }
 
 
   // -------------------
