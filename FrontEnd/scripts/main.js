@@ -5,10 +5,6 @@ const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
 
-// -------------------
-// DOM Ready
-// -------------------
-document.addEventListener('DOMContentLoaded', () => {
 
   // -------------------
   // Gestion du token
@@ -53,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Premier chargement des données
   // -------------------
   fetchData();
-});
 
 
 // -------------------
