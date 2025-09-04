@@ -73,7 +73,6 @@ function isValidToken(token) {
 // -------------------
 // UI Connexion / Déconnexion
 // -------------------
-
 function showLoggedInUI() {
   const loginLogoutItem = document.getElementById('login_logout_container');
   const editButtonContainer = document.getElementById('edit-mode-button');
@@ -98,21 +97,24 @@ function showLoggedInUI() {
   // Bandeau "Mode édition"
   // -------------------
   if (editModeBanner) {
-    editModeBanner.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
-    editModeBanner.style.display = 'flex';
-    editModeBanner.style.alignItems = 'center';
-    editModeBanner.style.justifyContent = 'center';
-    editModeBanner.style.gap = '8px';
-    editModeBanner.style.backgroundColor = 'black';
-    editModeBanner.style.color = 'white';
-    editModeBanner.style.padding = '12px';
-    editModeBanner.style.fontSize = '18px';
-    editModeBanner.style.fontWeight = 'bold';
-    editModeBanner.style.width = '100%';
+    editModeBanner.innerHTML =
+      '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
+    Object.assign(editModeBanner.style, {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      backgroundColor: 'black',
+      color: 'white',
+      padding: '12px',
+      fontSize: '18px',
+      fontWeight: 'bold',
+      width: '100%',
+    });
   }
 
   // -------------------
-  // Bouton "Modifier" 
+  // Bouton "Modifier"
   // -------------------
   if (editButtonContainer) {
     editButtonContainer.innerHTML = `
@@ -122,76 +124,119 @@ function showLoggedInUI() {
     `;
 
     const editButton = document.getElementById('edit-button');
-
-    // Styles du bouton
-    editButton.style.display = 'inline-flex';
-    editButton.style.alignItems = 'center';
-    editButton.style.justifyContent = 'center';
-    editButton.style.gap = '6px';
-    editButton.style.backgroundColor = 'transparent';
-    editButton.style.color = 'black';
-    editButton.style.padding = '0px 30px';
-    editButton.style.border = 'none';
-    editButton.style.cursor = 'pointer';
-
-
-
-  if (modal && modal.innerHTML.trim() === "") {
-    modal.innerHTML = `
-      <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>Galerie photo</h2>
-        <div id="modal-gallery"></div>
-        <button id="open-photo-form-btn">Ajouter une photo</button>
-        <form id="photo-upload-form" style="display:none;">
-          <div class="upload-zone">
-            <input type="file" id="image-upload" accept="image/png, image/jpeg"/>
-          </div>
-          <input type="text" id="photo-title" placeholder="Titre"/>
-          <select id="photo-category"></select>
-          <button type="submit">Valider</button>
-        </form>
-      </div>
-    `;
-  }
-
-  // -------------------
-  // Listener ouverture modale
-  // -------------------
-  editButton.addEventListener('click', () => {
-    modal.style.display = 'block';
-    afficherImagesDansModale(allWorks);
-
-  // Listener fermeture
-  const closeModalBtn = modal.querySelector('.close-btn');
-  if (closeModalBtn) closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
-
-    window.addEventListener('click', e => {
-      if (e.target === modal) modal.style.display = 'none';
+    Object.assign(editButton.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '6px',
+      backgroundColor: 'transparent',
+      color: 'black',
+      padding: '0px 30px',
+      border: 'none',
+      cursor: 'pointer',
     });
 
-    window.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
+    // Créer la modale si vide
+    if (modal && modal.innerHTML.trim() === "") {
+      construireModal(modal);
+    }
+
+    // -------------------
+    // Listener ouverture modale
+    // -------------------
+    editButton.addEventListener('click', () => {
+      modal.style.display = 'block';
+      afficherImagesDansModale(allWorks);
+
+      // Fermeture avec croix
+      const closeModalBtn = modal.querySelector('.close-btn');
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => (modal.style.display = 'none'));
       }
-    });
 
-    const openFormBtn = document.getElementById('open-photo-form-btn');
-    const formAjout = document.getElementById('photo-upload-form');
-    const modalGallery = document.getElementById('modal-gallery');
-    const modalTitle = document.querySelector('.modal-content h2');
+      // Fermeture en cliquant en dehors
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+      });
 
-    if (openFormBtn && formAjout && modalGallery && modalTitle) {
-      openFormBtn.addEventListener('click', () => {
-        modalGallery.style.display = 'none';
-        openFormBtn.style.display = 'none';
-        modalTitle.style.display = 'none';
-        formAjout.style.display = 'block';
+      // Formulaire ajout photo
+      const openFormBtn = document.getElementById('open-photo-form-btn');
+      const formAjout = document.getElementById('photo-upload-form');
+      const modalGallery = document.getElementById('modal-gallery');
+      const modalTitle = document.querySelector('.modal-content h2');
+
+      if (openFormBtn && formAjout && modalGallery && modalTitle) {
+        openFormBtn.addEventListener('click', () => {
+          modalGallery.style.display = 'none';
+          openFormBtn.style.display = 'none';
+          modalTitle.style.display = 'none';
+          formAjout.style.display = 'block';
         });
       }
     });
   }
 }
+
+// -------------------
+// Fonction de création de modal
+// -------------------
+function construireModal(modal) {
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  const closeBtn = document.createElement('span');
+  closeBtn.classList.add('close-btn');
+  closeBtn.textContent = '×';
+
+  const title = document.createElement('h2');
+  title.textContent = 'Galerie photo';
+
+  const gallery = document.createElement('div');
+  gallery.id = 'modal-gallery';
+
+  const openFormBtn = document.createElement('button');
+  openFormBtn.id = 'open-photo-form-btn';
+  openFormBtn.textContent = 'Ajouter une photo';
+
+  const form = document.createElement('form');
+  form.id = 'photo-upload-form';
+  form.style.display = 'none';
+
+  const uploadZone = document.createElement('div');
+  uploadZone.classList.add('upload-zone');
+
+  const inputFile = document.createElement('input');
+  inputFile.type = 'file';
+  inputFile.id = 'image-upload';
+  inputFile.accept = 'image/png, image/jpeg';
+  uploadZone.appendChild(inputFile);
+
+  const inputTitle = document.createElement('input');
+  inputTitle.type = 'text';
+  inputTitle.id = 'photo-title';
+  inputTitle.placeholder = 'Titre';
+
+  const selectCategory = document.createElement('select');
+  selectCategory.id = 'photo-category';
+
+  const submitBtn = document.createElement('button');
+  submitBtn.type = 'submit';
+  submitBtn.textContent = 'Valider';
+
+  form.appendChild(uploadZone);
+  form.appendChild(inputTitle);
+  form.appendChild(selectCategory);
+  form.appendChild(submitBtn);
+
+  modalContent.appendChild(closeBtn);
+  modalContent.appendChild(title);
+  modalContent.appendChild(gallery);
+  modalContent.appendChild(openFormBtn);
+  modalContent.appendChild(form);
+
+  modal.appendChild(modalContent);
+}
+
 
 
 function logout() {
