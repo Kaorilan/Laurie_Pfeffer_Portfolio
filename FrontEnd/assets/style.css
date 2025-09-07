@@ -257,12 +257,7 @@ nav a{
   border: none;
   border-top: 1px solid #ccc;
 }
-.separator-form{
-	width: 100%;
-	margin: 50px auto;
-	border: none;
-	border-top: 1px solid #ccc;
-}
+
 
 .modal button{
 	font-family: 'Syne';
@@ -277,17 +272,30 @@ nav a{
 	margin: auto;
 }
 .close-btn {
-  color: #aaa;
+  color: black;
   position: absolute;
-  top: 10px;
+  top: 20px;
   right: 20px;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
 }
 .close-btn:hover {
-  color: black;
+  color: #aaa;
 }
+.back-arrow {
+  font-weight: bold;
+  color: black;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 30px;
+  cursor: pointer;
+}
+.back-arrow:hover {
+  color: #aaa;
+}
+
 .upload-zone {
   display: flex;
   flex-direction: column;
@@ -344,9 +352,35 @@ nav a{
 .form-group label{
 	display: flex;
 	justify-content: start;
-	margin: 20px auto;
+	margin: 20px 0;
 }
-
+.form-group input{
+	height: 40px;
+	box-shadow: 5px 5px 5px #8a88882e;
+	border: none;
+}
+.form-group select{
+	height: 40px;
+	background-color: #ffff;
+	box-shadow: 5px 5px 5px #8a88882e;
+	border: none;
+}
+.separator-form{
+	width: 100%;
+	margin: 50px auto;
+	border: none;
+	border-top: 1px solid #ccc;
+}
+#photo-upload-form h2{
+	color: #000000;
+	padding: 20px;
+}
+#photo-upload-form .submit-btn{
+	color: #ffff;
+	background-color: #a7a7a7;
+	border: none;
+	padding: 15px 100px;
+}
 #photo-upload-form{
 	text-align: center;
 	width: 80%;

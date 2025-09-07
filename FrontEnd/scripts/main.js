@@ -252,12 +252,35 @@ function construireModalDynamique() {
   openFormBtn.id = "open-photo-form-btn";
   openFormBtn.textContent = "Ajouter une photo";
 
+  
   // Formulaire ajout
   const form = document.createElement("form");
   form.id = "photo-upload-form";
   form.style.display = "none";
   form.enctype = "multipart/form-data";
 
+
+  // Flèche retour
+  const backArrow = document.createElement("span");
+  backArrow.classList.add("back-arrow");
+  backArrow.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
+  backArrow.style.cursor = "pointer";
+  backArrow.style.fontSize = "20px";
+  backArrow.style.display = "block";
+  backArrow.style.marginBottom = "10px";
+
+  // retour à la galerie
+  backArrow.addEventListener("click", () => {
+      form.style.display = "none";
+      gallery.style.display = "flex";
+      openFormBtn.style.display = "block";
+      title.style.display = "block";
+      separatorModal.style.display = "block"; // remettre le separator
+  });
+
+  // Ajouter la flèche en haut du formulaire
+  form.appendChild(backArrow);
+  
   const formTitle = document.createElement("h2");
   formTitle.classList.add("form-title");
   formTitle.textContent = "Ajout de photo";
@@ -329,7 +352,7 @@ function construireModalDynamique() {
   const submitBtn = document.createElement("button");
   submitBtn.type = "submit";
   submitBtn.classList.add("submit-btn");
-  submitBtn.textContent = "Ajouter";
+  submitBtn.textContent = "Valider";
 
   // Assembler formulaire
   form.appendChild(formTitle);
@@ -368,6 +391,7 @@ function construireModalDynamique() {
     gallery.style.display = "none";
     openFormBtn.style.display = "none";
     title.style.display = "none";
+    separatorModal.style.display = "none"; // cacher le separator de la galerie
     form.style.display = "block";
   });
 
@@ -443,7 +467,7 @@ function remplirListeCategories(categories) {
 
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
-  defaultOption.textContent = "Choisir une catégorie";
+  defaultOption.textContent = "";
   select.appendChild(defaultOption);
 
   filtredCats.forEach((cat) => {
