@@ -188,8 +188,8 @@ nav a{
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  justify-content: space-between;
-  margin: 40px;
+  width: 80%;
+  margin: 50px auto;
 }
 
 .modal-gallery-item {
@@ -229,6 +229,7 @@ nav a{
   border: none;
   border-top: 1px solid #ccc;
 }
+
 
 .modal button{
 	font-family: 'Syne';
@@ -304,6 +305,8 @@ nav a{
 
 #photo-upload-form{
 	text-align: center;
+	width: 80%;
+  	margin: 50px auto;
 }
 
 #gallery {

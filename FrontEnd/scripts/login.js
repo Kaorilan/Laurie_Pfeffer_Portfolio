@@ -31,8 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) {
-        throw new Error("Identifiants incorrects.");
+        errorMessage.textContent = "Identifiants incorrects.";
+        errorMessage.style.color = 'red';
+        return;
       }
+
 
       const data = await response.json();
 
