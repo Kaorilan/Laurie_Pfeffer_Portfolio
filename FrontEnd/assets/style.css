@@ -258,7 +258,7 @@ nav a{
   border-top: 1px solid #ccc;
 }
 .separator-form{
-	width: 80%;
+	width: 100%;
 	margin: 50px auto;
 	border: none;
 	border-top: 1px solid #ccc;
@@ -295,13 +295,14 @@ nav a{
   justify-content: center;
   border: 2px dashed #ccc;
   padding: 20px;
-  background-color: #f8f8f8;
+  background-color: #e8f1f6;
   position: relative;
+  margin: 20px 0px;
 }
 
 .custom-upload-label {
   cursor: pointer;
-  color: #2c3e50;
+  color: #306685;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -309,10 +310,17 @@ nav a{
   font-weight: bold;
   gap: 8px;
 }
+.custom-upload-label span {
+	
+	background-color: #cbd6dc;
+	border-radius: 2em;
+	padding: 15px 30px;
+	margin: 20px;
+}
 
 .custom-upload-label i {
-  font-size: 40px;
-  color: #2c3e50;
+  font-size: 500%;
+  color: #b9c5cc;
 }
 
 #image-upload {
@@ -325,6 +333,9 @@ nav a{
 	max-height: 200px;
 	margin-top: 10px;
 	object-fit: contain;
+}
+.upload-zone p{
+	color: #444444;
 }
 .form-group{
 	display: flex;
