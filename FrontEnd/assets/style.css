@@ -164,6 +164,34 @@ nav a{
 	background-color: #1D6154;
 	color: white;
 }
+
+/* Bandeau mode édition */
+.edit-mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: black;
+  color: white;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* Bouton Modifier mode édition */
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: transparent;
+  color: black;
+  padding: 0px 30px;
+  border: none;
+  cursor: pointer;
+}
+
 .modal{
 	display: none;
 	position: absolute;
@@ -223,13 +251,18 @@ nav a{
   pointer-events: none; /* Évite que l’icône bloque le clic */
 }
 
-.separator {
+.separator-modal {
   width: 80%;
   margin: 50px auto;
   border: none;
   border-top: 1px solid #ccc;
 }
-
+.separator-form{
+	width: 80%;
+	margin: 50px auto;
+	border: none;
+	border-top: 1px solid #ccc;
+}
 
 .modal button{
 	font-family: 'Syne';

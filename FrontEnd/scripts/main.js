@@ -63,83 +63,6 @@ function isValidToken(token) {
 }
 
 // -------------------
-// UI Connexion / Déconnexion
-// -------------------
-function showLoggedInUI() {
-  const loginLogoutItem = document.getElementById('login_logout_container');
-  const editButtonContainer = document.getElementById('edit-mode-button');
-  const editModeBanner = document.getElementById('edit-mode-banner');
-
-
-  // -------------------
-  // Lien Logout
-  // -------------------
-  if (loginLogoutItem) {
-    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
-    const logoutLink = document.querySelector('#logout');
-    if (logoutLink) {
-      logoutLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        logout();
-      });
-    }
-  }
-
-  // -------------------
-  // Bandeau "Mode édition" style en css createlement appenchild 
-  // -------------------
-  if (editModeBanner) {
-    editModeBanner.innerHTML =
-      '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Mode édition';
-    Object.assign(editModeBanner.style, {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      backgroundColor: 'black',
-      color: 'white',
-      padding: '12px',
-      fontSize: '18px',
-      fontWeight: 'bold',
-      width: '100%',
-    });
-  }
-
-  // -------------------
-  // Bouton "Modifier"
-  // -------------------
-  if (editButtonContainer) {
-    editButtonContainer.innerHTML = `
-      <button id="edit-button">
-        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Modifier
-      </button>
-    `;
-
-    const editButton = document.getElementById('edit-button');
-    Object.assign(editButton.style, {
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '6px',
-      backgroundColor: 'transparent',
-      color: 'black',
-      padding: '0px 30px',
-      border: 'none',
-      cursor: 'pointer',
-    });
-
-      // Création de la modale
-    const modal = construireModalDynamique();
-
-      // Et on ouvre la modale au clic
-    editButton.addEventListener('click', () => {
-      modal.style.display = 'block';
-      afficherImagesDansModale(allWorks);
-    });
-    }
-  }
-
-// -------------------
 // Galerie & filtres
 // -------------------
 function afficherDonnees(data, categoryId = 0) {
@@ -214,6 +137,83 @@ function fetchData() {
     });
 }
 
+function showLoggedInUI() {
+  const loginLogoutItem = document.getElementById('login_logout_container');
+  const editButtonContainer = document.getElementById('edit-mode-button');
+  const editModeBanner = document.getElementById('edit-mode-banner');
+
+  // -------------------
+  // Lien Logout
+  // -------------------
+  if (loginLogoutItem) {
+    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
+    const logoutLink = document.querySelector('#logout');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    }
+  }
+
+  // -------------------
+  // Bandeau "Mode édition"
+  // -------------------
+  if (editModeBanner) {
+    editModeBanner.innerHTML = "";
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa", "fa-pencil-square-o");
+    icon.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("span");
+    text.textContent = "Mode édition";
+
+    editModeBanner.appendChild(icon);
+    editModeBanner.appendChild(text);
+    editModeBanner.classList.add("edit-mode-banner");
+  }
+
+  // -------------------
+  // Bouton "Modifier"
+  // -------------------
+  let button;
+  if (editButtonContainer) {
+    editButtonContainer.innerHTML = "";
+
+    button = document.createElement("button");
+    button.id = "edit-button";
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa", "fa-pencil-square-o");
+    icon.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("span");
+    text.textContent = "Modifier";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+    button.classList.add("edit-button");
+
+    editButtonContainer.appendChild(button);
+  }
+
+  // -------------------
+  // Création de la modale
+  // -------------------
+  const modal = construireModalDynamique();
+
+  // -------------------
+  // Ouvrir la modale
+  // -------------------
+  if (button) {
+    button.addEventListener('click', () => {
+      modal.style.display = 'block';
+      afficherImagesDansModale(allWorks);
+    });
+  }
+}
+
 
 
 // -------------------
@@ -242,9 +242,10 @@ function construireModalDynamique() {
   gallery.id = "modal-gallery";
   gallery.classList.add("modal-gallery");
 
-  // Séparateur
-  const separator1 = document.createElement("hr");
-  separator1.classList.add("separator");
+  // Séparateur entre galerie et bouton "ajouter une photo"
+  const separatorModal = document.createElement("hr");
+  separatorModal.classList.add("separator-modal");
+
 
   // Bouton ouverture formulaire
   const openFormBtn = document.createElement("button");
@@ -319,9 +320,11 @@ function construireModalDynamique() {
   formGroupCat.appendChild(labelCat);
   formGroupCat.appendChild(selectCategory);
 
-  // Séparateur + bouton submit
-  const separator2 = document.createElement("hr");
-  separator2.classList.add("separator");
+  // Séparateur dans le formulaire
+  const separatorForm = document.createElement("hr");
+  separatorForm.classList.add("separator-form");
+
+
 
   const submitBtn = document.createElement("button");
   submitBtn.type = "submit";
@@ -333,14 +336,14 @@ function construireModalDynamique() {
   form.appendChild(uploadZone);
   form.appendChild(formGroupTitle);
   form.appendChild(formGroupCat);
-  form.appendChild(separator2);
+  form.appendChild(separatorForm);
   form.appendChild(submitBtn);
 
   // Assembler contenu modal
   modalContent.appendChild(closeBtn);
   modalContent.appendChild(title);
   modalContent.appendChild(gallery);
-  modalContent.appendChild(separator1);
+  modalContent.appendChild(separatorModal);
   modalContent.appendChild(openFormBtn);
   modalContent.appendChild(form);
 
