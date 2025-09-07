@@ -504,16 +504,19 @@ function remplirListeCategories(categories) {
         const existingPreview = uploadZone.querySelector("img");
         if (existingPreview) existingPreview.remove();
 
+        // Cacher tout le reste
+        Array.from(uploadZone.children).forEach(child => {
+          if (child.tagName !== "IMG") {
+            child.style.display = "none";
+          }
+        });
+
         // Aperçu
         const reader = new FileReader();
         reader.onload = (e) => {
           const preview = document.createElement("img");
           preview.src = e.target.result;
           preview.alt = "Aperçu";
-          preview.style.maxWidth = "100%";
-          preview.style.maxHeight = "200px";
-          preview.style.objectFit = "contain";
-          preview.style.marginTop = "10px";
           uploadZone.appendChild(preview);
         };
         reader.readAsDataURL(file);
