@@ -198,7 +198,6 @@ nav a{
 	left: 0;
 	top: 500px;
 	width: 100%;
-
 	overflow: auto;
 	background-color: rgba(0,0,0,0.6);
 	z-index: 999;
@@ -208,14 +207,20 @@ nav a{
 	margin: 10% auto;
 	padding: 20px;
 	border-radius: 8px;
-	width: 80%;
-	max-width: 650px;
+	width: 50%;
 	position: relative;
+}
+.modal-content h2{
+	color: #000000;
+	padding: 20px;
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
 }
 .modal-gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 12px;
   width: 80%;
   margin: 50px auto;
 }
@@ -297,20 +302,17 @@ nav a{
 }
 
 .upload-zone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed #ccc;
-  padding: 20px;
-  background-color: #e8f1f6;
-  position: relative;
-  
-    width: 100%;
-  height: 200px; /* tu peux ajuster la hauteur totale que tu veux */
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	border: 2px dashed #ccc;
+	background-color: #e8f1f6;
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
 }
 
 .custom-upload-label {
@@ -324,7 +326,6 @@ nav a{
   gap: 8px;
 }
 .custom-upload-label span {
-	
 	background-color: #cbd6dc;
 	border-radius: 2em;
 	padding: 15px 30px;
@@ -353,6 +354,7 @@ nav a{
 }
 .upload-zone p{
 	color: #444444;
+	padding-bottom: 10px;
 }
 .form-group{
 	display: flex;

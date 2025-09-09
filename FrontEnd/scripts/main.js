@@ -146,7 +146,7 @@ function showLoggedInUI() {
   // Lien Logout
   // -------------------
   if (loginLogoutItem) {
-    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">Logout</a>';
+    loginLogoutItem.innerHTML = '<a href="index.html" id="logout">logout</a>';
     const logoutLink = document.querySelector('#logout');
     if (logoutLink) {
       logoutLink.addEventListener('click', (e) => {
@@ -155,6 +155,15 @@ function showLoggedInUI() {
       });
     }
   }
+  
+  function logout() {
+  // Supprimer le token
+  sessionStorage.removeItem("authToken");
+
+  // Recharger la page d'accueil
+  window.location.href = "index.html";
+  }
+
 
   // -------------------
   // Bandeau "Mode édition"
@@ -417,7 +426,7 @@ function afficherImagesDansModale(data) {
 
     const deleteIcon = document.createElement("span");
     deleteIcon.classList.add("delete-icon");
-    deleteIcon.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
+    deleteIcon.innerHTML = '<i class="fa fa-trash"></i>';
     deleteIcon.addEventListener("click", () => supprimerTravail(item.id));
 
     container.appendChild(img);
