@@ -244,6 +244,7 @@ function construireModalDynamique() {
 
   // Titre galerie
   const title = document.createElement("h2");
+  
   title.textContent = "Galerie photo";
 
   // Galerie d’images
