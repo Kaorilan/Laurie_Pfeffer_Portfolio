@@ -14,7 +14,9 @@ function isValidToken(token) {
   }
 }
 
-
+// -------------------
+// Soumission formulaire
+// -------------------
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -42,13 +44,18 @@ form.addEventListener('submit', async (e) => {
 
     const data = await response.json();
 
+    // Vérifie que le token est présent et valide
     if (data.token && isValidToken(data.token)) {
+      // Stocke le token dans sessionStorage
       sessionStorage.setItem('authToken', data.token);
+
+      // Redirige vers l'accueil
       window.location.href = 'index.html';
     } else {
       errorMessage.textContent = "Token invalide.";
       errorMessage.style.color = 'red';
     }
+
   } catch (err) {
     errorMessage.textContent = "Erreur réseau.";
     errorMessage.style.color = 'red';
