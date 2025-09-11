@@ -393,6 +393,9 @@ nav a{
 	border: none;
 	padding: 15px 100px;
 }
+#photo-upload-form .submit-btn:hover{
+	background-color: #1D6154;
+}
 #photo-upload-form{
 	text-align: center;
 	width: 80%;
