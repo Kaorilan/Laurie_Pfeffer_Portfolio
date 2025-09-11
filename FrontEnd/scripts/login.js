@@ -1,25 +1,26 @@
 const form = document.getElementById('login-form');
 const errorMessage = document.getElementById('error-message');
 
-// Fonction pour vérifier la validité du token (même logique que main.js)
+// -------------------
+// Vérification token
+// -------------------
 function isValidToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000; // secondes
+    const now = Date.now() / 1000;
     return payload.userId && payload.exp > now;
-  } catch (error) {
-    console.error("Erreur vérification token :", error);
+  } catch {
     return false;
   }
 }
 
-form.addEventListener('submit', async function(event) {
-  event.preventDefault();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
   const email = document.getElementById('email')?.value.trim();
   const password = document.getElementById('password')?.value.trim();
 
-  // Vérification locale des champs avant appel API
   if (!email || !password) {
     errorMessage.textContent = "Veuillez remplir tous les champs.";
     errorMessage.style.color = 'red';
@@ -41,22 +42,16 @@ form.addEventListener('submit', async function(event) {
 
     const data = await response.json();
 
-    if (data.token) {
-      // Vérification du token avant stockage et redirection
-      if (isValidToken(data.token)) {
-        sessionStorage.setItem('authToken', data.token);
-        window.location.href = 'index.html';
-      } else {
-        errorMessage.textContent = "Token invalide, connexion impossible.";
-        errorMessage.style.color = 'red';
-      }
+    if (data.token && isValidToken(data.token)) {
+      sessionStorage.setItem('authToken', data.token);
+      window.location.href = 'index.html';
     } else {
-      throw new Error("Réponse invalide du serveur.");
+      errorMessage.textContent = "Token invalide.";
+      errorMessage.style.color = 'red';
     }
-
-  } catch (error) {
-    console.error("Erreur lors de la connexion :", error);
-    errorMessage.textContent = error.message;
+  } catch (err) {
+    errorMessage.textContent = "Erreur réseau.";
     errorMessage.style.color = 'red';
+    console.error(err);
   }
 });

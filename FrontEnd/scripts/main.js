@@ -47,21 +47,6 @@ let allWorks = [];
 
 
 
-
-// -------------------
-// Vérification token
-// -------------------
-function isValidToken(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000; // secondes
-    return payload.userId && payload.exp > now;
-  } catch (error) {
-    console.error("Erreur vérification token :", error);
-    return false;
-  }
-}
-
 // -------------------
 // Galerie & filtres
 // -------------------
