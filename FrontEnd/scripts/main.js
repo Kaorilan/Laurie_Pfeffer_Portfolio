@@ -4,54 +4,58 @@
 const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
-
-
-  // -------------------
-  // Gestion du token
-  // -------------------
-  const token = sessionStorage.getItem('authToken');
-  const isTokenValid = token && isValidToken(token);
-
-  // -------------------
-  // Sélection des éléments du DOM
-  // -------------------
-  const filters = document.getElementById('buttonContainer');
-  const editButtonContainer = document.getElementById('edit-mode-button');
-  const editModeBanner = document.getElementById('edit-mode-banner');
-  const modal = document.getElementById('edit-modal');
-  
-
-  // -------------------
-  // Gestion lien login actif
-  // -------------------
-  const loginLink = document.getElementById('login_page');
-  if (loginLink && window.location.pathname.endsWith('login.html')) {
-    loginLink.classList.add('active-link');
+// -------------------
+// Vérification token
+// -------------------
+function isValidToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const now = Date.now() / 1000;
+    return payload.userId && payload.exp > now;
+  } catch (err) {
+    console.error("Erreur vérification token :", err);
+    return false;
   }
+}
 
-  // -------------------
-  // Gestion UI selon connexion
-  // -------------------
-  if (!isTokenValid) {
-    sessionStorage.removeItem('authToken');
-    if (editButtonContainer) editButtonContainer.style.display = 'none';
-    if (editModeBanner) editModeBanner.style.display = 'none';
-    // IMPORTANT : quand on n’est PAS connecté, on montre les filtres
-    if (filters) filters.style.display = 'flex';
-  } else {
-    showLoggedInUI();
-    // Quand on est connecté → on masque les filtres
-    if (filters) filters.style.display = 'none';
-  }
+// -------------------
+// Gestion du token
+// -------------------
+const token = sessionStorage.getItem('authToken');
+const isTokenValid = token && isValidToken(token);
 
+// -------------------
+// Sélection du DOM
+// -------------------
+const filters = document.getElementById('buttonContainer');
+const editButtonContainer = document.getElementById('edit-mode-button');
+const editModeBanner = document.getElementById('edit-mode-banner');
 
+// -------------------
+// Lien login actif
+// -------------------
+const loginLink = document.getElementById('login_page');
+if (loginLink && window.location.pathname.endsWith('login.html')) {
+  loginLink.classList.add('active-link');
+}
 
+// -------------------
+// Gestion UI selon connexion
+// -------------------
+if (!isTokenValid) {
+  sessionStorage.removeItem('authToken');
+  if (editButtonContainer) editButtonContainer.style.display = 'none';
+  if (editModeBanner) editModeBanner.style.display = 'none';
+  if (filters) filters.style.display = 'flex';
+} else {
+  showLoggedInUI();
+  if (filters) filters.style.display = 'none';
+}
 
 // -------------------
 // Galerie & filtres
 // -------------------
 function afficherDonnees(data, categoryId = 0) {
-
   const container = document.getElementById('gallery');
   if (!container) return;
 
@@ -77,8 +81,11 @@ function afficherDonnees(data, categoryId = 0) {
   });
 }
 
+// -------------------
+// Fetch des données
+// -------------------
 function fetchData() {
-  fetch(apiUrl + "/works")
+  fetch(`${apiUrl}/works`)
     .then(response => {
       if (!response.ok) throw new Error('Erreur réseau : ' + response.status);
       return response.json();
@@ -96,10 +103,9 @@ function fetchData() {
       const categories = [{ id: 0, label: "Tous" }];
       categoriesMap.forEach((name, id) => categories.push({ id, label: name }));
 
-      // Remplir liste select
+      // Remplir select et boutons filtres
       remplirListeCategories(categories);
 
-      // Boutons filtres
       const boutonContainer = document.getElementById('buttonContainer');
       if (boutonContainer) {
         boutonContainer.innerHTML = '';
@@ -122,40 +128,30 @@ function fetchData() {
     });
 }
 
+// -------------------
+// UI Mode connecté
+// -------------------
 function showLoggedInUI() {
   const loginLogoutItem = document.getElementById('login_logout_container');
   const editButtonContainer = document.getElementById('edit-mode-button');
   const editModeBanner = document.getElementById('edit-mode-banner');
 
-  // -------------------
-  // Lien Logout
-  // -------------------
+  // Lien logout
   if (loginLogoutItem) {
     loginLogoutItem.innerHTML = '<a href="index.html" id="logout">logout</a>';
     const logoutLink = document.querySelector('#logout');
     if (logoutLink) {
       logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
-        logout();
+        sessionStorage.removeItem("authToken");
+        window.location.href = "index.html";
       });
     }
   }
-  
-  function logout() {
-  // Supprimer le token
-  sessionStorage.removeItem("authToken");
 
-  // Recharger la page d'accueil
-  window.location.href = "index.html";
-  }
-
-
-  // -------------------
-  // Bandeau "Mode édition"
-  // -------------------
+  // Bandeau Mode édition
   if (editModeBanner) {
     editModeBanner.innerHTML = "";
-
     const icon = document.createElement("i");
     icon.classList.add("fa", "fa-pencil-square-o");
     icon.setAttribute("aria-hidden", "true");
@@ -168,13 +164,10 @@ function showLoggedInUI() {
     editModeBanner.classList.add("edit-mode-banner");
   }
 
-  // -------------------
-  // Bouton "Modifier"
-  // -------------------
+  // Bouton Modifier
   let button;
   if (editButtonContainer) {
     editButtonContainer.innerHTML = "";
-
     button = document.createElement("button");
     button.id = "edit-button";
 
@@ -192,14 +185,9 @@ function showLoggedInUI() {
     editButtonContainer.appendChild(button);
   }
 
-  // -------------------
-  // Création de la modale
-  // -------------------
+  // Création modale
   const modal = construireModalDynamique();
 
-  // -------------------
-  // Ouvrir la modale
-  // -------------------
   if (button) {
     button.addEventListener('click', () => {
       modal.style.display = 'block';
@@ -208,16 +196,14 @@ function showLoggedInUI() {
   }
 }
 
-
-
 // -------------------
-// Création de la modale complète
+// Modale complète
 // -------------------
 function construireModalDynamique() {
   const modal = document.createElement("div");
   modal.id = "edit-modal";
   modal.classList.add("modal");
-  modal.style.display = "none"; // cachée par défaut
+  modal.style.display = "none";
 
   const modalContent = document.createElement("div");
   modalContent.classList.add("modal-content");
@@ -229,31 +215,26 @@ function construireModalDynamique() {
 
   // Titre galerie
   const title = document.createElement("h2");
-  
   title.textContent = "Galerie photo";
 
-  // Galerie d’images
+  // Galerie
   const gallery = document.createElement("div");
   gallery.id = "modal-gallery";
   gallery.classList.add("modal-gallery");
 
-  // Séparateur entre galerie et bouton "ajouter une photo"
   const separatorModal = document.createElement("hr");
   separatorModal.classList.add("separator-modal");
 
-
-  // Bouton ouverture formulaire
+  // Bouton formulaire
   const openFormBtn = document.createElement("button");
   openFormBtn.id = "open-photo-form-btn";
   openFormBtn.textContent = "Ajouter une photo";
 
-  
-  // Formulaire ajout
+  // Formulaire
   const form = document.createElement("form");
   form.id = "photo-upload-form";
   form.style.display = "none";
   form.enctype = "multipart/form-data";
-
 
   // Flèche retour
   const backArrow = document.createElement("span");
@@ -264,22 +245,22 @@ function construireModalDynamique() {
   backArrow.style.display = "block";
   backArrow.style.marginBottom = "10px";
 
-  // retour à la galerie
   backArrow.addEventListener("click", () => {
-      form.style.display = "none";
-      gallery.style.display = "flex";
-      openFormBtn.style.display = "block";
-      title.style.display = "block";
-      separatorModal.style.display = "block"; // remettre le separator
+    form.style.display = "none";
+    gallery.style.display = "flex";
+    openFormBtn.style.display = "block";
+    title.style.display = "block";
+    separatorModal.style.display = "block";
   });
 
-  // Ajouter la flèche en haut du formulaire
   form.appendChild(backArrow);
-  
+
+  // Titre formulaire
   const formTitle = document.createElement("h2");
   formTitle.classList.add("form-title");
   formTitle.textContent = "Ajout de photo";
 
+  // Upload zone
   const uploadZone = document.createElement("div");
   uploadZone.classList.add("upload-zone");
 
@@ -338,18 +319,14 @@ function construireModalDynamique() {
   formGroupCat.appendChild(labelCat);
   formGroupCat.appendChild(selectCategory);
 
-  // Séparateur dans le formulaire
   const separatorForm = document.createElement("hr");
   separatorForm.classList.add("separator-form");
-
-
 
   const submitBtn = document.createElement("button");
   submitBtn.type = "submit";
   submitBtn.classList.add("submit-btn");
   submitBtn.textContent = "Valider";
 
-  // Assembler formulaire
   form.appendChild(formTitle);
   form.appendChild(uploadZone);
   form.appendChild(formGroupTitle);
@@ -357,7 +334,6 @@ function construireModalDynamique() {
   form.appendChild(separatorForm);
   form.appendChild(submitBtn);
 
-  // Assembler contenu modal
   modalContent.appendChild(closeBtn);
   modalContent.appendChild(title);
   modalContent.appendChild(gallery);
@@ -368,33 +344,114 @@ function construireModalDynamique() {
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
 
-  // -------------------
-  // Listeners internes
-  // -------------------
-  // Fermer avec croix
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+  // Listeners
+  closeBtn.addEventListener("click", () => modal.style.display = "none");
+  window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-  // Fermer en cliquant en dehors
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-
-  // Basculer vers formulaire
   openFormBtn.addEventListener("click", () => {
     gallery.style.display = "none";
     openFormBtn.style.display = "none";
     title.style.display = "none";
-    separatorModal.style.display = "none"; // cacher le separator de la galerie
+    separatorModal.style.display = "none";
     form.style.display = "block";
+  });
+
+  // Gestion upload image + preview
+  inputFile.addEventListener("change", () => {
+    const file = inputFile.files[0];
+    if (!file) return;
+
+    const fileType = file.type;
+    const fileSize = file.size;
+
+    if (!["image/jpeg", "image/png"].includes(fileType)) {
+      alert("Format non supporté. Choisissez un fichier JPG ou PNG.");
+      inputFile.value = "";
+      return;
+    }
+
+    if (fileSize > 4 * 1024 * 1024) {
+      alert("Image trop lourde (max 4 Mo).");
+      inputFile.value = "";
+      return;
+    }
+
+    const existingPreview = uploadZone.querySelector(".preview-wrapper");
+    if (existingPreview) existingPreview.remove();
+
+    const previewWrapper = document.createElement("div");
+    previewWrapper.classList.add("preview-wrapper");
+    const preview = document.createElement("img");
+    preview.src = URL.createObjectURL(file);
+    preview.alt = "Aperçu";
+    preview.classList.add("preview-image");
+    previewWrapper.appendChild(preview);
+    uploadZone.appendChild(previewWrapper);
+
+    labelUpload.style.display = "none";
+  });
+
+  // Gestion soumission formulaire
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const file = inputFile.files[0];
+    const titleValue = inputTitle.value.trim();
+    const categoryValue = selectCategory.value;
+
+    if (!file || !titleValue || !categoryValue) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("title", titleValue);
+    formData.append("category", categoryValue);
+
+    const token = sessionStorage.getItem("authToken");
+    if (!token) {
+      alert("Non autorisé.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/works`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        alert("Erreur lors de l'envoi de la photo.");
+        return;
+      }
+
+      fetchData();
+
+      // Reset form
+      inputFile.value = "";
+      inputTitle.value = "";
+      selectCategory.value = "";
+      const preview = uploadZone.querySelector(".preview-wrapper");
+      if (preview) preview.remove();
+      labelUpload.style.display = "block";
+
+      form.style.display = "none";
+      gallery.style.display = "flex";
+      openFormBtn.style.display = "block";
+      title.style.display = "block";
+      separatorModal.style.display = "block";
+    } catch {
+      alert("Erreur réseau.");
+    }
   });
 
   return modal;
 }
 
 // -------------------
-// Affichage images dans la modale
+// Affichage images modale
 // -------------------
 function afficherImagesDansModale(data) {
   const modalGallery = document.getElementById("modal-gallery");
@@ -402,7 +459,7 @@ function afficherImagesDansModale(data) {
 
   modalGallery.innerHTML = "";
 
-  data.forEach((item) => {
+  data.forEach(item => {
     const container = document.createElement("div");
     container.classList.add("modal-gallery-item");
 
@@ -435,200 +492,46 @@ function supprimerTravail(id) {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   })
-    .then((response) => {
-      if (response.ok) {
-        fetchData();
-      } else {
-        alert("Erreur lors de la suppression.");
-      }
-    })
-    .catch(() => {
+  .then(response => {
+    if (!response.ok) {
       alert("Erreur lors de la suppression.");
-    });
+      return;
+    }
+    fetchData();
+  })
+  .catch(() => alert("Erreur lors de la suppression."));
 }
 
 // -------------------
-// Formulaire (inchangé)
+// Remplir liste catégories
 // -------------------
 function remplirListeCategories(categories) {
   const select = document.getElementById("photo-category");
   if (!select) return;
 
-  // Exclure "Tous"
-  const filtredCats = categories.filter((cat) => cat.id !== 0);
-
-  // Vider select
+  const filtredCats = categories.filter(cat => cat.id !== 0);
   select.innerHTML = "";
-
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
   defaultOption.textContent = "";
   select.appendChild(defaultOption);
 
-  filtredCats.forEach((cat) => {
+  filtredCats.forEach(cat => {
     const option = document.createElement("option");
     option.value = cat.id;
     option.textContent = cat.label;
     select.appendChild(option);
   });
-
-  const photoUploadForm = document.getElementById("photo-upload-form");
-  const imageInput = document.getElementById("image-upload");
-  const uploadZone = document.querySelector(".upload-zone");
-  const openFormBtn = document.getElementById("open-photo-form-btn");
-  const backArrow = document.querySelector(".back-arrow");
-
-  // Fonction utilitaire pour réinitialiser la zone d'upload
-  function resetUploadZone() {
-    if (!uploadZone) return;
-
-    // Supprimer l’aperçu
-    const previewWrapper = uploadZone.querySelector(".preview-wrapper");
-    if (previewWrapper) previewWrapper.remove();
-
-    // Réafficher le label (bouton d’ajout)
-    const labelUpload = uploadZone.querySelector("label[for='image-upload']");
-    if (labelUpload) labelUpload.style.display = "";
-
-    // Réinitialiser l'input file
-    if (imageInput) imageInput.value = "";
-  }
-
-  // Ouvrir le formulaire → reset
-  if (openFormBtn) {
-    openFormBtn.addEventListener("click", () => {
-      resetUploadZone();
-      photoUploadForm.style.display = "block";
-      document.getElementById("modal-gallery").style.display = "none";
-      openFormBtn.style.display = "none";
-    });
-  }
-
-  // Retour avec back arrow → reset
-  if (backArrow) {
-    backArrow.addEventListener("click", () => {
-      resetUploadZone();
-      photoUploadForm.style.display = "block";
-    });
-  }
-
-  // Gestion changement d'image
-  if (imageInput && uploadZone && !imageInput.dataset.listenerAttached) {
-    imageInput.addEventListener("change", () => {
-      const file = imageInput.files[0];
-      if (!file) return;
-
-      const fileType = file.type;
-      const fileSize = file.size;
-
-      if (!["image/jpeg", "image/png"].includes(fileType)) {
-        alert("Format non supporté. Choisissez un fichier JPG ou PNG.");
-        imageInput.value = "";
-        return;
-      }
-
-      if (fileSize > 4 * 1024 * 1024) {
-        alert("Image trop lourde (max 4 Mo).");
-        imageInput.value = "";
-        return;
-      }
-
-      // Masquer le label d'ajout
-      const labelUpload = uploadZone.querySelector("label[for='image-upload']");
-      if (labelUpload) labelUpload.style.display = "none";
-
-
-      // Supprimer ancien aperçu si déjà présent
-      let previewWrapper = uploadZone.querySelector(".preview-wrapper");
-      if (!previewWrapper) {
-        previewWrapper = document.createElement("div");
-        previewWrapper.classList.add("preview-wrapper");
-        uploadZone.appendChild(previewWrapper);
-      }
-      previewWrapper.innerHTML = ""; // vider ancien contenu
-
-      
-      // Aperçu
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const preview = document.createElement("img");
-        preview.src = e.target.result;
-        preview.alt = "Aperçu";
-        preview.classList.add("preview-image");
-
-        previewWrapper.appendChild(preview);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    imageInput.dataset.listenerAttached = "true";
-  }
-
-  // Gestion soumission du formulaire
-  if (photoUploadForm) {
-    photoUploadForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const file = imageInput.files[0];
-      const title = document.getElementById("photo-title").value.trim();
-      const category = document.getElementById("photo-category").value;
-
-      if (!file || !title || !category) {
-        alert("Veuillez remplir tous les champs.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("title", title);
-      formData.append("category", category);
-
-      const token = sessionStorage.getItem("authToken");
-      if (!token) {
-        alert("Non autorisé.");
-        return;
-      }
-
-      fetch(`${apiUrl}/works`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      })
-        .then((response) => {
-          if (response.ok) {
-            fetchData();
-
-            // Réinitialiser la zone d'upload
-            resetUploadZone();
-
-            // Masquer le formulaire et réafficher la galerie
-            photoUploadForm.style.display = "none";
-            document.getElementById("modal-gallery").style.display = "flex";
-            openFormBtn.style.display = "block";
-            document.querySelector(".modal-content h2").style.display = "block";
-          } else {
-            response.text().then(() => {
-              alert("Erreur lors de l'envoi de la photo.");
-            });
-          }
-        })
-        .catch(() => {
-          alert("Erreur réseau.");
-        });
-    });
-  }
 }
 
 // -------------------
-// Fonction utilitaire erreur
+// Erreur utilitaire
 // -------------------
 function afficherErreur(message) {
-  alert(message); // (ou un affichage plus élégant dans ton UI)
+  alert(message);
 }
 
-
-
-  // -------------------
-  // Premier chargement des données
-  // -------------------
-  fetchData();
+// -------------------
+// Premier chargement
+// -------------------
+fetchData();
