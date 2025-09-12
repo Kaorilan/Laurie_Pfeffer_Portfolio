@@ -196,7 +196,7 @@ nav a{
 	display: none;
 	position: absolute;
 	left: 0;
-	top: 500px;
+	top: 0px;
 	width: 100%;
 	overflow: auto;
 	background-color: rgba(0,0,0,0.6);
