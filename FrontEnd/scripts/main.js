@@ -225,7 +225,7 @@ function construireModalDynamique() {
   const separatorModal = document.createElement("hr");
   separatorModal.classList.add("separator-modal");
 
-  // Bouton formulaire
+  // Bouton accès formulaire
   const openFormBtn = document.createElement("button");
   openFormBtn.id = "open-photo-form-btn";
   openFormBtn.textContent = "Ajouter une photo";
@@ -258,7 +258,7 @@ function construireModalDynamique() {
   // Titre formulaire
   const formTitle = document.createElement("h2");
   formTitle.classList.add("form-title");
-  formTitle.textContent = "Ajout de photo";
+  
 
   // Upload zone
   const uploadZone = document.createElement("div");
@@ -388,6 +388,7 @@ function construireModalDynamique() {
     previewWrapper.appendChild(preview);
     uploadZone.appendChild(previewWrapper);
 
+    //cache le label upload derriere l'image
     labelUpload.style.display = "none";
   });
 

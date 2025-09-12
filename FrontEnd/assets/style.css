@@ -207,7 +207,7 @@ nav a{
 	margin: 10% auto;
 	padding: 20px;
 	border-radius: 8px;
-	width: 50%;
+	width: 40%;
 	position: relative;
 }
 .modal-content h2{
@@ -223,6 +223,7 @@ nav a{
   gap: 12px;
   width: 80%;
   margin: 50px auto;
+  justify-content: space-between;
 }
 
 .modal-gallery-item {
