@@ -498,7 +498,7 @@ function supprimerTravail(id) {
       alert("Erreur lors de la suppression.");
       return;
     }
-    fetchData();
+    fetchData(); // indispensable ?
   })
   .catch(() => alert("Erreur lors de la suppression."));
 }

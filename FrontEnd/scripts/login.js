@@ -1,18 +1,6 @@
 const form = document.getElementById('login-form');
 const errorMessage = document.getElementById('error-message');
 
-// -------------------
-// Vérification token
-// -------------------
-function isValidToken(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
-    return payload.userId && payload.exp > now;
-  } catch {
-    return false;
-  }
-}
 
 // -------------------
 // Soumission formulaire
@@ -23,6 +11,7 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email')?.value.trim();
   const password = document.getElementById('password')?.value.trim();
 
+  //Préviens si un champs est vide, mais j'ai aussi mis "required dans l'html"
   if (!email || !password) {
     errorMessage.textContent = "Veuillez remplir tous les champs.";
     errorMessage.style.color = 'red';
@@ -45,17 +34,14 @@ form.addEventListener('submit', async (e) => {
     const data = await response.json();
 
     // Vérifie que le token est présent et valide
-    if (data.token && isValidToken(data.token)) {
+    if (response.ok) {
       // Stocke le token dans sessionStorage
       sessionStorage.setItem('authToken', data.token);
 
       // Redirige vers l'accueil
       window.location.href = 'index.html';
-    } else {
-      errorMessage.textContent = "Token invalide.";
-      errorMessage.style.color = 'red';
-    }
-
+    } 
+    
   } catch (err) {
     errorMessage.textContent = "Erreur réseau.";
     errorMessage.style.color = 'red';
