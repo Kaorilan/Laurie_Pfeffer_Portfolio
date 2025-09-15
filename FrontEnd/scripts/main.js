@@ -4,53 +4,7 @@
 const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
-// -------------------
-// Vérification token
-// -------------------
-function isValidToken(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
-    return payload.userId && payload.exp > now;
-  } catch (err) {
-    console.error("Erreur vérification token :", err);
-    return false;
-  }
-}
 
-// -------------------
-// Gestion du token
-// -------------------
-const token = sessionStorage.getItem('authToken');
-const isTokenValid = token && isValidToken(token);
-
-// -------------------
-// Sélection du DOM
-// -------------------
-const filters = document.getElementById('buttonContainer');
-const editButtonContainer = document.getElementById('edit-mode-button');
-const editModeBanner = document.getElementById('edit-mode-banner');
-
-// -------------------
-// Lien login actif
-// -------------------
-const loginLink = document.getElementById('login_page');
-if (loginLink && window.location.pathname.endsWith('login.html')) {
-  loginLink.classList.add('active-link');
-}
-
-// -------------------
-// Gestion UI selon connexion
-// -------------------
-if (!isTokenValid) {
-  sessionStorage.removeItem('authToken');
-  if (editButtonContainer) editButtonContainer.style.display = 'none';
-  if (editModeBanner) editModeBanner.style.display = 'none';
-  if (filters) filters.style.display = 'flex';
-} else {
-  showLoggedInUI();
-  if (filters) filters.style.display = 'none';
-}
 
 // -------------------
 // Galerie & filtres
@@ -128,6 +82,58 @@ function fetchData() {
     });
 }
 
+
+// -------------------
+// Gestion du token
+// -------------------
+const token = sessionStorage.getItem('authToken');
+const isTokenValid = token && isValidToken(token);
+
+
+// -------------------
+// Vérification token
+// -------------------
+function isValidToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const now = Date.now() / 1000;
+    return payload.userId && payload.exp > now;
+  } catch (err) {
+    console.error("Erreur vérification token :", err);
+    return false;
+  }
+}
+
+
+// -------------------
+// Sélection du DOM
+// -------------------
+const filters = document.getElementById('buttonContainer');
+const editButtonContainer = document.getElementById('edit-mode-button');
+const editModeBanner = document.getElementById('edit-mode-banner');
+
+// -------------------
+// Lien login actif
+// -------------------
+const loginLink = document.getElementById('login_page');
+if (loginLink && window.location.pathname.endsWith('login.html')) {
+  loginLink.classList.add('active-link');
+}
+
+// -------------------
+// Gestion UI selon connexion
+// -------------------
+if (!isTokenValid) {
+  sessionStorage.removeItem('authToken');
+  if (editButtonContainer) editButtonContainer.style.display = 'none';
+  if (editModeBanner) editModeBanner.style.display = 'none';
+  if (filters) filters.style.display = 'flex';
+} else {
+  showLoggedInUI();
+  if (filters) filters.style.display = 'none';
+}
+
+
 // -------------------
 // UI Mode connecté
 // -------------------
@@ -154,7 +160,6 @@ function showLoggedInUI() {
     editModeBanner.innerHTML = "";
     const icon = document.createElement("i");
     icon.classList.add("fa", "fa-pencil-square-o");
-    icon.setAttribute("aria-hidden", "true");
 
     const text = document.createElement("span");
     text.textContent = "Mode édition";
@@ -173,7 +178,6 @@ function showLoggedInUI() {
 
     const icon = document.createElement("i");
     icon.classList.add("fa", "fa-pencil-square-o");
-    icon.setAttribute("aria-hidden", "true");
 
     const text = document.createElement("span");
     text.textContent = "Modifier";
@@ -498,7 +502,7 @@ function supprimerTravail(id) {
       alert("Erreur lors de la suppression.");
       return;
     }
-    fetchData(); // indispensable ?
+    fetchData();
   })
   .catch(() => alert("Erreur lors de la suppression."));
 }
@@ -532,7 +536,4 @@ function afficherErreur(message) {
   alert(message);
 }
 
-// -------------------
-// Premier chargement
-// -------------------
 fetchData();
