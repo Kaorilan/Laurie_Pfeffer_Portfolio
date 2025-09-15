@@ -5,34 +5,25 @@ const apiUrl = 'http://localhost:5678/api';
 let allWorks = [];
 
 
+// -------------------
+// Gestion du token
+// -------------------
+const token = sessionStorage.getItem('authToken');
+const isTokenValid = token && isValidToken(token);
+
 
 // -------------------
-// Galerie & filtres
+// Vérification token
 // -------------------
-function afficherDonnees(data, categoryId = 0) {
-  const container = document.getElementById('gallery');
-  if (!container) return;
-
-  container.innerHTML = '';
-
-  const filteredData = categoryId == 0
-    ? data
-    : data.filter(item => item.category.id === Number(categoryId));
-
-  filteredData.forEach(item => {
-    const element = document.createElement('div');
-
-    const img = document.createElement('img');
-    img.src = item.imageUrl;
-    img.alt = item.title;
-    element.appendChild(img);
-
-    const title = document.createElement('h3');
-    title.textContent = item.title;
-    element.appendChild(title);
-
-    container.appendChild(element);
-  });
+function isValidToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const now = Date.now() / 1000;
+    return payload.userId && payload.exp > now;
+  } catch (err) {
+    console.error("Erreur vérification token :", err);
+    return false;
+  }
 }
 
 // -------------------
@@ -84,26 +75,56 @@ function fetchData() {
 
 
 // -------------------
-// Gestion du token
+// Galerie & filtres
 // -------------------
-const token = sessionStorage.getItem('authToken');
-const isTokenValid = token && isValidToken(token);
+function afficherDonnees(data, categoryId = 0) {
+  const container = document.getElementById('gallery');
+  if (!container) return;
 
+  container.innerHTML = '';
 
-// -------------------
-// Vérification token
-// -------------------
-function isValidToken(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
-    return payload.userId && payload.exp > now;
-  } catch (err) {
-    console.error("Erreur vérification token :", err);
-    return false;
-  }
+  const filteredData = categoryId == 0
+    ? data
+    : data.filter(item => item.category.id === Number(categoryId));
+
+  filteredData.forEach(item => {
+    const element = document.createElement('div');
+
+    const img = document.createElement('img');
+    img.src = item.imageUrl;
+    img.alt = item.title;
+    element.appendChild(img);
+
+    const title = document.createElement('h3');
+    title.textContent = item.title;
+    element.appendChild(title);
+
+    container.appendChild(element);
+  });
 }
 
+
+// -------------------
+// Remplir liste catégories
+// -------------------
+function remplirListeCategories(categories) {
+  const select = document.getElementById("photo-category");
+  if (!select) return;
+
+  const filtredCats = categories.filter(cat => cat.id !== 0);
+  select.innerHTML = "";
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "";
+  select.appendChild(defaultOption);
+
+  filtredCats.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat.id;
+    option.textContent = cat.label;
+    select.appendChild(option);
+  });
+}
 
 // -------------------
 // Sélection du DOM
@@ -507,27 +528,7 @@ function supprimerTravail(id) {
   .catch(() => alert("Erreur lors de la suppression."));
 }
 
-// -------------------
-// Remplir liste catégories
-// -------------------
-function remplirListeCategories(categories) {
-  const select = document.getElementById("photo-category");
-  if (!select) return;
 
-  const filtredCats = categories.filter(cat => cat.id !== 0);
-  select.innerHTML = "";
-  const defaultOption = document.createElement("option");
-  defaultOption.value = "";
-  defaultOption.textContent = "";
-  select.appendChild(defaultOption);
-
-  filtredCats.forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat.id;
-    option.textContent = cat.label;
-    select.appendChild(option);
-  });
-}
 
 // -------------------
 // Erreur utilitaire
