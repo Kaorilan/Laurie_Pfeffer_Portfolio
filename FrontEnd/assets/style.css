@@ -194,7 +194,7 @@ nav a{
 
 .modal{
 	display: none;
-	position: absolute;
+	position: fixed;
 	left: 0;
 	top: 0px;
 	width: 100%;
@@ -208,6 +208,7 @@ nav a{
 	padding: 20px;
 	border-radius: 8px;
 	width: 40%;
+	height: 700px;
 	position: relative;
 }
 .modal-content h2{
@@ -215,12 +216,12 @@ nav a{
 	padding: 20px;
 	display: flex;
 	justify-content: center;
-	margin-top: 20px;
+	
 }
 .modal-gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 5px;
   width: 80%;
   margin: 50px auto;
   
@@ -231,8 +232,7 @@ nav a{
   width: 100px;
   height: auto;
   overflow: hidden;
-  margin-left: 15px;
-  margin-right: 15px;
+  
 }
 
 .modal-gallery-item img {
