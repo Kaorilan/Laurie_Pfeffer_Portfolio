@@ -231,7 +231,7 @@ nav a{
   width: 100px;
   height: auto;
   overflow: hidden;
-  margin-left: 15px;
+  margin-left: 17px;
 }
 
 .modal-gallery-item img {
@@ -260,7 +260,7 @@ nav a{
 
 .separator-modal {
   width: 80%;
-  margin: 50px auto;
+  margin: 40px auto;
   border: none;
   border-top: 1px solid #ccc;
 }
@@ -362,6 +362,7 @@ nav a{
 .form-group{
 	display: flex;
 	flex-direction: column;
+	padding: 14px;
 }
 .form-group label{
 	display: flex;
@@ -381,7 +382,7 @@ nav a{
 }
 .separator-form{
 	width: 100%;
-	margin: 50px auto;
+	margin: 40px auto;
 	border: none;
 	border-top: 1px solid #ccc;
 }
@@ -393,7 +394,12 @@ nav a{
 	color: #ffff;
 	background-color: #a7a7a7;
 	border: none;
-	padding: 15px 100px;
+	padding: 10px 100px;
+	font-family: 'Syne';
+	font-size: 16px;
+	border-radius: 50px;
+	cursor: pointer;
+	margin: auto;
 }
 #photo-upload-form .submit-btn:hover{
 	background-color: #1D6154;

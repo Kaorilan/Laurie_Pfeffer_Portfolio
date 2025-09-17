@@ -283,6 +283,7 @@ function construireModalDynamique() {
   // Titre formulaire
   const formTitle = document.createElement("h2");
   formTitle.classList.add("form-title");
+  formTitle.textContent = "Ajout photo";
   
 
   // Upload zone
