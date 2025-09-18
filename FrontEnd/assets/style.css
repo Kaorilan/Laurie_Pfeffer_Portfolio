@@ -108,7 +108,7 @@ nav a{
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	margin-top: 20px;
+	margin-top: 50px;
 }
 #introduction {
 	display: flex;
@@ -177,6 +177,8 @@ nav a{
   font-size: 18px;
   font-weight: bold;
   width: 100%;
+  left: 0;
+  position: absolute;
 }
 
 /* Bouton Modifier mode édition */

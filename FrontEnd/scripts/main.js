@@ -48,9 +48,10 @@ function fetchData() {
       const categories = [{ id: 0, label: "Tous" }];
       categoriesMap.forEach((name, id) => categories.push({ id, label: name }));
 
-      // Remplir select et boutons filtres
+      // Remplir select dans formulaire et boutons filtres
       remplirListeCategories(categories);
 
+      //bouton de filtre
       const boutonContainer = document.getElementById('buttonContainer');
       if (boutonContainer) {
         boutonContainer.innerHTML = '';
