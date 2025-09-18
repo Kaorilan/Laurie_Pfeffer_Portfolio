@@ -256,6 +256,8 @@ function construireModalDynamique() {
   openFormBtn.id = "open-photo-form-btn";
   openFormBtn.textContent = "Ajouter une photo";
 
+
+
   // Formulaire
   const form = document.createElement("form");
   form.id = "photo-upload-form";
