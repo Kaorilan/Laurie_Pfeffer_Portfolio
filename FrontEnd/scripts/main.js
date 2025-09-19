@@ -84,9 +84,7 @@ function afficherDonnees(data, categoryId = 0) {
 
   container.innerHTML = '';
 
-  const filteredData = categoryId == 0
-    ? data
-    : data.filter(item => item.category.id === Number(categoryId));
+  const filteredData = categoryId == 0 ? data : data.filter(item => item.category.id === Number(categoryId));
 
   filteredData.forEach(item => {
     const element = document.createElement('div');
@@ -256,7 +254,9 @@ function construireModalDynamique() {
   openFormBtn.id = "open-photo-form-btn";
   openFormBtn.textContent = "Ajouter une photo";
 
-
+  //-------------
+  //Formulaire
+  //-------------
 
   // Formulaire
   const form = document.createElement("form");
