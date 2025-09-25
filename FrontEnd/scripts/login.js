@@ -26,7 +26,7 @@ form.addEventListener('submit', async (e) => {
     });
 
     if (!response.ok) {
-      errorMessage.textContent = "Identifiants incorrects.";
+      errorMessage.textContent = "Erreur dans l’identifiant ou le mot de passe";
       errorMessage.style.color = 'red';
       return;
     }
