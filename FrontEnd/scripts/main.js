@@ -38,20 +38,45 @@ function fetchData() {
     .then(data => {
       allWorks = data;
 
-      // Catégories uniques
-      const categoriesMap = new Map();
-      allWorks.forEach(work => {
-        const cat = work.category;
-        if (cat && !categoriesMap.has(cat.id)) categoriesMap.set(cat.id, cat.name);
-      });
+      const categories = [];
 
+        allWorks.forEach(work => {
+          const cat = work.category;
+          if (cat && !categories.some(c => c.id === cat.id)) {
+            categories.push({ id: cat.id, name: cat.name });
+          }
+        });
+
+      afficherDonnees(allWorks);
+      afficherImagesDansModale(allWorks);
+
+      // Charger les catégories une fois les works connus
+      fetchCategories();
+
+    })
+    .catch(error => {
+      afficherErreur('Impossible de charger les travaux pour le moment.');
+    });
+}
+
+
+// -------------------
+// Fetch catégories
+// -------------------
+function fetchCategories() {
+  fetch(`${apiUrl}/categories`)
+    .then(response => {
+      if (!response.ok) throw new Error('Erreur réseau : ' + response.status);
+      return response.json();
+    })
+    .then(data => {
+      // data est supposé être un tableau d’objets { id, name }
       const categories = [{ id: 0, label: "Tous" }];
-      categoriesMap.forEach((name, id) => categories.push({ id, label: name }));
+      data.forEach(cat => categories.push({ id: cat.id, label: cat.name }));
 
-      // Remplir select dans formulaire et boutons filtres
+      // Remplir select dans formulaire + boutons
       remplirListeCategories(categories);
 
-      //bouton de filtre
       const boutonContainer = document.getElementById('buttonContainer');
       if (boutonContainer) {
         boutonContainer.innerHTML = '';
@@ -65,12 +90,9 @@ function fetchData() {
           boutonContainer.appendChild(btn);
         });
       }
-
-      afficherDonnees(allWorks);
-      afficherImagesDansModale(allWorks);
     })
-    .catch(error => {
-      afficherErreur('Impossible de charger les travaux pour le moment.');
+    .catch(() => {
+      afficherErreur("Impossible de charger les catégories pour le moment.");
     });
 }
 
